@@ -1,0 +1,13 @@
+# 测试环境配置
+spring:
+  config:
+    activate:
+      on-profile: test
+
+app:
+  greeting:
+    message: "测试环境 - Test Mode"
+  feature:
+    enabled: true
+  cache:
+    enabled: false

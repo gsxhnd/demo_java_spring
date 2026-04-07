@@ -6,12 +6,19 @@
 
 | 项目 | 数据库/中间件 | 核心技术 | 状态 |
 |---|---|---|---|
+| **核心基础（参考 [docs/core/](../docs/core/)）** | | | |
+| [spring-ioc-demo](spring-ioc-demo/) | - | IoC 容器、Bean 生命周期、作用域、条件装配 | 已创建 |
+| [spring-mvc-demo](spring-mvc-demo/) | - | RESTful API、参数校验、统一异常处理、拦截器 | 已创建 |
+| [spring-autoconfig-demo](spring-autoconfig-demo/) | - | 自动配置原理、@ConfigurationProperties、Profile | 已创建 |
+| [spring-transaction-demo](spring-transaction-demo/) | H2（内存） | 声明式事务、传播行为、事务失效场景 | 已创建 |
+| **数据库与中间件** | | | |
 | [spring-mysql-demo](spring-mysql-demo/) | MySQL | JPA + MyBatis-Plus | 已创建 |
 | [spring-redis-demo](spring-redis-demo/) | Redis | Spring Data Redis, Cache, 分布式锁 | 已创建 |
 | [spring-mongodb-demo](spring-mongodb-demo/) | MongoDB | Spring Data MongoDB, 聚合管道 | 已创建 |
 | [spring-es-demo](spring-es-demo/) | Elasticsearch | Spring Data ES, 全文搜索, 聚合 | 已创建 |
 | [spring-clickhouse-demo](spring-clickhouse-demo/) | ClickHouse | JDBC, 批量写入, 聚合查询 | 已创建 |
 | [spring-influxdb-demo](spring-influxdb-demo/) | InfluxDB | InfluxDB Client, Flux 查询 | 已创建 |
+| **待生成** | | | |
 | spring-security-demo | - | Spring Security + JWT | 待生成 |
 | spring-microservice-demo | 多中间件 | 微服务综合示例（多模块） | 待生成 |
 

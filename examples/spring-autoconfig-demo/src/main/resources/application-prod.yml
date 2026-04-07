@@ -1,0 +1,16 @@
+# 生产环境配置
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+app:
+  greeting:
+    message: "生产环境 - Production Mode"
+  cache:
+    enabled: true
+    ttl: 7200
+
+logging:
+  level:
+    com.example.autoconfig: WARN

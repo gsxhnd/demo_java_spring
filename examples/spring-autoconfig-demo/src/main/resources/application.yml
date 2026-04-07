@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-autoconfig-demo
+  profiles:
+    # 激活的开发环境
+    active: dev
+
+# 自定义应用配置
+app:
+  greeting:
+    enabled: true
+    message: "欢迎使用 Spring Boot"
+  feature:
+    enabled: false
+  cache:
+    enabled: true
+    ttl: 3600
+
+# 日志级别
+logging:
+  level:
+    com.example.autoconfig: DEBUG
+    org.springframework.boot.autoconfigure: DEBUG

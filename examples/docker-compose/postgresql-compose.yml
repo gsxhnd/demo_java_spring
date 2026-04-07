@@ -1,0 +1,27 @@
+# PostgreSQL 16 单机部署 / PostgreSQL 16 Standalone
+# 启动: docker compose -f postgresql-compose.yml up -d
+# Start: docker compose -f postgresql-compose.yml up -d
+
+services:
+  postgresql:
+    image: postgres:16
+    container_name: postgresql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: demo_db
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d demo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgresql_data:
+    name: postgresql_data

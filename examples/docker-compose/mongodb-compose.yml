@@ -1,0 +1,27 @@
+# MongoDB 7 单机部署 / MongoDB 7 Standalone
+# 启动: docker compose -f mongodb-compose.yml up -d
+# Start: docker compose -f mongodb-compose.yml up -d
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongo123
+      MONGO_INITDB_DATABASE: demo_db
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mongodb_data:
+    name: mongodb_data

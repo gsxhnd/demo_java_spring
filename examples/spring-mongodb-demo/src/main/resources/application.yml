@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://root:mongo123@localhost:27017/demo_db?authSource=admin

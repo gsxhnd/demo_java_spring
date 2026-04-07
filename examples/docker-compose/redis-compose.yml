@@ -1,0 +1,25 @@
+# Redis 7 单机部署 (带持久化) / Redis 7 Standalone (with persistence)
+# 启动: docker compose -f redis-compose.yml up -d
+# Start: docker compose -f redis-compose.yml up -d
+
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    # 开启AOF持久化并设置密码 / Enable AOF persistence and set password
+    command: redis-server --requirepass redis123 --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  redis_data:
+    name: redis_data

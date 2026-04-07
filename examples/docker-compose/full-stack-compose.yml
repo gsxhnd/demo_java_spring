@@ -1,0 +1,198 @@
+# 全栈一键启动 / Full-Stack One-Click Startup
+# 包含: MySQL, PostgreSQL, Redis, MongoDB, Elasticsearch + Kibana, ClickHouse, InfluxDB
+# Includes: MySQL, PostgreSQL, Redis, MongoDB, Elasticsearch + Kibana, ClickHouse, InfluxDB
+#
+# 启动全部: docker compose -f full-stack-compose.yml up -d
+# Start all:  docker compose -f full-stack-compose.yml up -d
+# 启动部分: docker compose -f full-stack-compose.yml up -d mysql redis
+# Start some: docker compose -f full-stack-compose.yml up -d mysql redis
+
+services:
+  # ==================== MySQL ====================
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: demo_db
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==================== PostgreSQL ====================
+  postgresql:
+    image: postgres:16
+    container_name: postgresql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: demo_db
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d demo_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==================== Redis ====================
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    # 开启AOF持久化并设置密码 / Enable AOF persistence and set password
+    command: redis-server --requirepass redis123 --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ==================== MongoDB ====================
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongo123
+      MONGO_INITDB_DATABASE: demo_db
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==================== Elasticsearch ====================
+  elasticsearch:
+    image: elasticsearch:8.15.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ==================== Kibana ====================
+  kibana:
+    image: kibana:8.15.0
+    container_name: kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5601/api/status || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # ==================== ClickHouse ====================
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: clickhouse123
+      CLICKHOUSE_DB: demo_db
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - clickhouse_logs:/var/log/clickhouse-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # ==================== InfluxDB ====================
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: admin12345678
+      DOCKER_INFLUXDB_INIT_ORG: my-org
+      DOCKER_INFLUXDB_INIT_BUCKET: monitoring
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: my-super-secret-token
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+# 命名卷 / Named volumes
+volumes:
+  mysql_data:
+    name: mysql_data
+  postgresql_data:
+    name: postgresql_data
+  redis_data:
+    name: redis_data
+  mongodb_data:
+    name: mongodb_data
+  es_data:
+    name: es_data
+  clickhouse_data:
+    name: clickhouse_data
+  clickhouse_logs:
+    name: clickhouse_logs
+  influxdb_data:
+    name: influxdb_data
+  influxdb_config:
+    name: influxdb_config

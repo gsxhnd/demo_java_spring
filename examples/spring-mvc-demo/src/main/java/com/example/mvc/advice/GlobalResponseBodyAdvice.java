@@ -5,7 +5,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * 实现此接口可以统一包装所有 @ResponseBody 的返回值
  */
 @RestControllerAdvice
-public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object, Object> {
+public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
     /**
      * 判断哪些响应需要处理
@@ -34,7 +34,7 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object, Obje
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType,
                                   MediaType selectedContentType,
-                                  Class<? extends MappingJackson2HttpMessageConverter> selectedConverterType,
+                                  Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   ServerHttpRequest request, ServerHttpResponse response) {
         // 将响应统一包装为 ApiResponse
         return ApiResponse.success(body);

@@ -1,0 +1,21 @@
+# Docker compose data volumes
+data/
+volumes/
+
+# Logs
+*.log
+logs/
+
+# Environment files (may contain sensitive data)
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE - VS Code
+.vscode/
+
+# Docker credentials
+.docker/config.json

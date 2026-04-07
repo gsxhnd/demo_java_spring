@@ -87,7 +87,7 @@ UserService.create() {            UserService.create() {
 
 ### Maven 依赖
 
-- `spring-boot-starter-aop` — 自动引入 AspectJ Weaver
+- `spring-boot-starter-aspectj` — 自动引入 AspectJ Weaver
 
 ### 关键注解
 

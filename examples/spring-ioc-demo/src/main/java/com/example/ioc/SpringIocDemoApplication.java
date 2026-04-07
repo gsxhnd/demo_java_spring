@@ -7,10 +7,11 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Spring IoC 演示主应用
  *
- * @SpringBootApplication = @SpringBootConfiguration + @EnableAutoConfiguration + @ComponentScan
- * - @SpringBootConfiguration: 本质是 @Configuration
- * - @EnableAutoConfiguration: 触发自动配置
- * - @ComponentScan: 默认扫描主类所在包及其子包
+ * @SpringBootApplication = @SpringBootConfiguration + @EnableAutoConfiguration
+ *                        + @ComponentScan
+ *                        - @SpringBootConfiguration: 本质是 @Configuration
+ *                        - @EnableAutoConfiguration: 触发自动配置
+ *                        - @ComponentScan: 默认扫描主类所在包及其子包
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "com.example.ioc")

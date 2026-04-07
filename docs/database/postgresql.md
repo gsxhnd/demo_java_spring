@@ -111,12 +111,34 @@ spring:
 
 ## 6. 示例项目 / Example
 
-完整可运行代码见 → [`examples/spring-mysql-demo/`](../../examples/spring-mysql-demo/)（MySQL 示例项目中包含 PostgreSQL 对比配置 profile）
+完整可运行代码见 → [`examples/spring-mysql-demo/`](../../examples/spring-mysql-demo/)
 
-启动依赖：
+**包含功能：**
+- MySQL 和 PostgreSQL 双 profile 配置（`application.yml` / `application-postgres.yml`）
+- JSONB 类型映射（使用 Hypersistence Utils）
+- PostgreSQL 数组类型
+- 原生 SQL JSONB 查询
+- MyBatis-Plus 双数据库支持
+
+**启动依赖：**
 ```bash
+# MySQL 模式（默认）
+cd examples/docker-compose && docker compose -f mysql-compose.yml up -d
+mvn spring-boot:run
+
+# PostgreSQL 模式
 cd examples/docker-compose && docker compose -f postgresql-compose.yml up -d
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
+
+**API 接口：**
+- `POST /api/products` - 创建产品（JSONB 属性）
+- `GET /api/products` - 获取所有产品
+- `GET /api/products/{id}` - 获取单个产品
+- `PUT /api/products/{id}/attributes` - 更新 JSONB 属性
+- `POST /api/products/{id}/tags` - 添加标签（数组）
+- `GET /api/products/category/{category}` - JSONB 分类查询
+- `GET /api/products/tag/{tag}` - 标签数组查询
 
 ## 7. 参考链接 / References
 

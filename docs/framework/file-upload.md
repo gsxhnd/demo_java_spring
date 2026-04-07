@@ -398,7 +398,29 @@ return ResponseEntity.ok()
 
 ## 6. 示例项目 / Example
 
-- 文件上传示例 → [`examples/spring-file-demo/`](../../examples/spring-file-demo/)（待创建）
+完整可运行代码见 → [`examples/spring-file-demo/`](../../examples/spring-file-demo/)
+
+**演示功能：**
+- 单文件上传
+- 多文件批量上传
+- 分目录存储
+- 文件下载
+- 文件预览
+- 文件类型验证（MIME Type + Magic Number）
+- 文件大小限制
+
+**运行示例：**
+```bash
+cd examples/spring-file-demo
+mvn spring-boot:run
+```
+
+**API 接口：**
+- `POST /api/files/upload` - 单文件上传
+- `POST /api/files/upload/batch` - 批量上传
+- `GET /api/files/{filename}` - 文件下载
+- `GET /api/files/{filename}/preview` - 文件预览
+- `DELETE /api/files/{filename}` - 删除文件
 
 ---
 

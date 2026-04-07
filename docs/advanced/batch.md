@@ -146,9 +146,27 @@ STARTING → STARTED → COMPLETED
 
 ## 6. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-batch-demo/`](../../examples/spring-batch-demo/)（待创建）
->
-> 将演示：CSV 导入数据库、数据库导出 CSV、chunk 处理、Skip/Retry 容错、多步骤 Job
+完整可运行代码见 → [`examples/spring-batch-demo/`](../../examples/spring-batch-demo/)
+
+**演示功能：**
+- CSV 文件读取
+- Chunk 处理模式
+- ItemProcessor 数据转换
+- Skip/Retry 容错机制
+- Job/Step 监听器
+- 数据库写入
+
+**运行示例：**
+```bash
+cd examples/spring-batch-demo
+mvn spring-boot:run
+
+# 触发批处理
+curl -X POST http://localhost:8080/api/batch/jobs/csv-import
+
+# 查看处理结果
+curl http://localhost:8080/api/batch/products
+```
 
 ## 7. 参考链接 / References
 

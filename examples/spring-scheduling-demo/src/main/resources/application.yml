@@ -1,0 +1,49 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-scheduling-demo
+
+  datasource:
+    url: jdbc:h2:mem:scheduling_demo;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+
+  # Quartz Configuration
+  quartz:
+    job-store-type: memory  # memory (单机) / jdbc (集群)
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: SchedulingDemoScheduler
+            instanceId: AUTO
+          threadPool:
+            threadCount: 5
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Task Scheduling Configuration
+task:
+  scheduling:
+    pool:
+      size: 10
+    thread-name-prefix: scheduled-task-
+
+# Logging
+logging:
+  level:
+    com.example.scheduling: DEBUG
+    org.springframework.scheduling: DEBUG
+    org.quartz: INFO

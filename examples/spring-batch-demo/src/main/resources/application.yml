@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-batch-demo
+
+  datasource:
+    url: jdbc:h2:mem:batch_demo;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+
+  # Spring Batch 配置
+  batch:
+    jdbc:
+      initialize-schema: always  # 自动创建 Batch 元数据表
+    job:
+      enabled: false  # 禁止启动时自动执行 Job
+
+# Batch 配置
+batch:
+  input-dir: classpath:data/in
+  output-dir: classpath:data/out
+  chunk-size: 100
+
+logging:
+  level:
+    com.example.batch: DEBUG
+    org.springframework.batch: INFO

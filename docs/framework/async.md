@@ -171,9 +171,27 @@ ApplicationEventPublisher              │
 
 ## 6. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-async-demo/`](../../examples/spring-async-demo/)（待创建）
->
-> 将演示：@Async 异步方法、自定义线程池、CompletableFuture 编排、Spring Event 事件驱动、MDC 传递
+完整可运行代码见 → [`examples/spring-async-demo/`](../../examples/spring-async-demo/)
+
+**演示功能：**
+- @Async 异步方法
+- 自定义线程池配置
+- CompletableFuture 异步编排
+- Spring Event 事件驱动
+- 异步事件监听
+- MDC 上下文传递
+
+**运行示例：**
+```bash
+cd examples/spring-async-demo
+mvn spring-boot:run
+```
+
+**API 接口：**
+- `POST /api/async/email/async` - 异步发送邮件
+- `POST /api/async/batch/process` - 并行处理多个任务
+- `POST /api/async/orders` - 创建订单（触发事件）
+- `GET /api/async/parallel-fetch` - 并行获取多个资源
 
 ## 7. 参考链接 / References
 

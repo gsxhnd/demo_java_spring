@@ -329,8 +329,29 @@ docker run -p 8080:8080 -p 5005:5005 \
 
 ## 6. 示例项目 / Example
 
-- 各示例项目的 Docker 部署 → [`examples/docker-compose/`](../../examples/docker-compose/)
-- 完整 Docker 部署示例 → [`examples/spring-docker-demo/`](../../examples/spring-docker-demo/)（待创建）
+完整可运行代码见 → [`examples/spring-docker-demo/`](../../examples/spring-docker-demo/)
+
+**演示功能：**
+- 多阶段 Dockerfile 构建
+- 分层 JAR 优化构建
+- JVM 容器感知配置
+- Docker Compose 编排
+- 健康检查配置
+- 非 root 用户运行
+
+**运行示例：**
+```bash
+cd examples/spring-docker-demo
+
+# 构建镜像
+docker build -t spring-docker-demo:latest .
+
+# 运行容器
+docker run -d -p 8080:8080 spring-docker-demo:latest
+
+# 或使用 Docker Compose
+docker compose up -d
+```
 
 ---
 

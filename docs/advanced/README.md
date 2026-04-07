@@ -20,6 +20,16 @@
 | [Spring Modulith 模块化单体](modulith.md) | 模块化架构、事件驱动、模块边界 | `@ApplicationModule` `ApplicationModuleTest` `EventExternalization` |
 | [Docker 部署 Java 应用](docker-deploy.md) | 容器化部署、镜像构建、JVM 调优 | `Dockerfile` `多阶段构建` `docker-compose` `JVM 容器参数` |
 
+## 示例项目 / Examples
+
+| 示例项目 | 演示内容 |
+|---------|---------|
+| [`examples/spring-websocket-demo/`](../examples/spring-websocket-demo/) ✅ | WebSocket + STOMP 聊天室、SSE 实时推送 |
+| [`examples/spring-batch-demo/`](../examples/spring-batch-demo/) ✅ | CSV 导入、Chunk 处理、Skip/Retry 容错 |
+| [`examples/spring-webflux-demo/`](../examples/spring-webflux-demo/) ✅ | WebFlux + R2DBC、Mono/Flux、SSE |
+| [`examples/spring-modulith-demo/`](../examples/spring-modulith-demo/) ✅ | 模块化结构、事件驱动、Event Publication Log |
+| [`examples/spring-docker-demo/`](../examples/spring-docker-demo/) ✅ | 多阶段构建、Docker Compose、健康检查 |
+
 ## 学习建议 / Recommendations
 
 ```

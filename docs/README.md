@@ -118,6 +118,8 @@ examples/
 ├── spring-cache-demo/              # Caffeine + Redis 多级缓存
 ├── spring-scheduling-demo/         # 定时任务、Quartz
 ├── spring-async-demo/              # 异步处理、线程池、事件驱动
+├── spring-file-demo/              # 文件上传下载
+├── spring-docker-demo/            # Docker 容器化部署
 ├── spring-websocket-demo/          # WebSocket 聊天、SSE 推送
 ├── spring-batch-demo/              # 批处理 ETL
 ├── spring-webflux-demo/            # 响应式 Web + R2DBC

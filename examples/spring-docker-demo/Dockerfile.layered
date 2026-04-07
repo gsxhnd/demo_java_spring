@@ -1,0 +1,47 @@
+# ===== 阶段 1: 构建阶段（分层 JAR） =====
+FROM eclipse-temurin:21-jdk-alpine AS builder
+
+WORKDIR /app
+
+# 复制源代码
+COPY . .
+
+# 构建应用
+RUN chmod +x mvnw && ./mvnw package -DskipTests -B
+
+# 提取分层 JAR
+RUN java -Djarmode=tools -jar target/*.jar extract --layers --destination extracted
+
+# ===== 阶段 2: 运行阶段 =====
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+# 创建非 root 用户
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# 按变化频率从低到高复制各层（充分利用 Docker 缓存）
+# dependencies: 很少变化
+COPY --from=builder /app/extracted/dependencies/ ./
+# spring-boot-loader: 很少变化
+COPY --from=builder /app/extracted/spring-boot-loader/ ./
+# snapshot-dependencies: 偶尔变化
+COPY --from=builder /app/extracted/snapshot-dependencies/ ./
+# application: 每次代码变更都会变化
+COPY --from=builder /app/extracted/application/ ./
+
+# 设置文件权限
+RUN chown -R appuser:appgroup /app
+USER appuser
+
+# JVM 参数
+ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD wget -qO- http://localhost:8080/actuator/health || exit 1
+
+EXPOSE 8080
+
+# 使用 JarLauncher 启动
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher"]

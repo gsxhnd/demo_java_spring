@@ -128,9 +128,26 @@ R2DBC:      Thread ──async──▶ DB ──callback──▶ 任意 Thread
 
 ## 6. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-webflux-demo/`](../../examples/spring-webflux-demo/)（待创建）
->
-> 将演示：WebFlux 注解式 + 函数式路由、WebClient、R2DBC CRUD、SSE 流式响应
+完整可运行代码见 → [`examples/spring-webflux-demo/`](../../examples/spring-webflux-demo/)
+
+**演示功能：**
+- WebFlux REST API
+- R2DBC 响应式数据库
+- Mono/Flux 响应式流
+- SSE 实时推送
+- Flux 聚合查询
+
+**运行示例：**
+```bash
+cd examples/spring-webflux-demo
+mvn spring-boot:run
+
+# 查询产品
+curl http://localhost:8080/api/products
+
+# SSE 流
+curl -N http://localhost:8080/api/products/sse/time
+```
 
 ## 7. 参考链接 / References
 

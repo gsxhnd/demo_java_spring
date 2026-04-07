@@ -167,9 +167,28 @@ Spring Modulith 提供事件发布日志，确保事件的可靠投递：
 
 ## 6. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-modulith-demo/`](../../examples/spring-modulith-demo/)（待创建）
->
-> 将演示：模块化结构、事件驱动通信、模块验证测试、Event Publication Log、文档生成
+完整可运行代码见 → [`examples/spring-modulith-demo/`](../../examples/spring-modulith-demo/)
+
+**演示功能：**
+- 模块化结构（order/inventory/notification）
+- ApplicationModuleListener 事件监听
+- 事件驱动模块通信
+- Event Publication Log
+- 订单创建触发库存扣减和通知发送
+
+**运行示例：**
+```bash
+cd examples/spring-modulith-demo
+mvn spring-boot:run
+
+# 创建订单
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"customerName":"张三","items":[{"productName":"MacBook Pro","quantity":1,"price":14999}]}'
+
+# 查看模块信息
+curl http://localhost:8080/api/modules
+```
 
 ## 7. 参考链接 / References
 

@@ -149,7 +149,28 @@ User ──→ Role ──→ Permission
 
 ## 6. 示例项目 / Example
 
-完整可运行代码见 → [`examples/spring-security-demo/`](../../examples/spring-security-demo/)（待生成）
+完整可运行代码见 → [`examples/spring-security-demo/`](../../examples/spring-security-demo/)
+
+**演示功能：**
+- Spring Security 过滤器链配置
+- JWT Token 生成与验证
+- 用户注册与登录
+- RBAC 权限控制（USER/ADMIN 角色）
+- `@PreAuthorize` 方法级权限注解
+- 全局异常处理
+
+**运行示例：**
+```bash
+cd examples/spring-security-demo
+mvn spring-boot:run
+```
+
+**API 接口：**
+- `POST /api/auth/register` - 用户注册
+- `POST /api/auth/login` - 用户登录
+- `GET /api/public/**` - 公开接口
+- `GET /api/user/**` - 需要 USER 角色
+- `GET /api/admin/**` - 需要 ADMIN 角色
 
 ## 7. 参考链接 / References
 

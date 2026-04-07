@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-modulith-demo
+
+  datasource:
+    url: jdbc:h2:mem:shop;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Spring Modulith 配置
+  modulith:
+    events:
+      # 启用事件出版物日志
+      publications: true
+      # 应用启动时重新发布未完成的事件
+      republish-outstanding-events-on-restart: false
+
+logging:
+  level:
+    com.example.shop: DEBUG
+    org.springframework.modulith: DEBUG

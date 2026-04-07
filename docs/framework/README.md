@@ -58,9 +58,11 @@
 
 ## 示例项目 / Example
 
-- Security + JWT 示例 → [`examples/spring-security-demo/`](../../examples/spring-security-demo/)（待生成）
-- JPA 进阶示例 → [`examples/spring-jpa-advanced-demo/`](../../examples/spring-jpa-advanced-demo/)（待生成）
-- 缓存示例 → [`examples/spring-cache-demo/`](../../examples/spring-cache-demo/)（待生成）
-- 任务调度示例 → [`examples/spring-scheduling-demo/`](../../examples/spring-scheduling-demo/)（待生成）
-- 异步处理示例 → [`examples/spring-async-demo/`](../../examples/spring-async-demo/)（待生成）
+- Security + JWT 示例 → [`examples/spring-security-demo/`](../../examples/spring-security-demo/) ✅
+- JPA 进阶示例 → [`examples/spring-jpa-advanced-demo/`](../../examples/spring-jpa-advanced-demo/) ✅
+- 缓存示例 → [`examples/spring-cache-demo/`](../../examples/spring-cache-demo/) ✅
+- 任务调度示例 → [`examples/spring-scheduling-demo/`](../../examples/spring-scheduling-demo/) ✅
+- 异步处理示例 → [`examples/spring-async-demo/`](../../examples/spring-async-demo/) ✅
+- 文件上传下载示例 → [`examples/spring-file-demo/`](../../examples/spring-file-demo/) ✅
+- Docker 部署示例 → [`examples/spring-docker-demo/`](../../examples/spring-docker-demo/) ✅
 - 其他能力集成在各数据库/微服务示例项目中

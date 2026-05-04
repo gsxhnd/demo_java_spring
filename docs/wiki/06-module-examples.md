@@ -50,11 +50,6 @@ com.example.{topic}/
 ```text
 examples/
 ├── README.md                    # 示例项目总览
-├── docker-compose/              # 中间件 Docker Compose
-│   ├── full-stack-compose.yml   # 全栈中间件
-│   ├── mysql-compose.yml
-│   ├── redis-compose.yml
-│   └── ...
 ├── spring-ioc-demo/             # 核心基础
 ├── spring-mvc-demo/
 ├── spring-autoconfig-demo/

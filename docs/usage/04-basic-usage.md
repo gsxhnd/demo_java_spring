@@ -37,12 +37,12 @@ cd examples/spring-transaction-demo && mvn spring-boot:run
 **对应示例**：
 ```bash
 # 启动 MySQL
-cd examples/docker-compose && docker compose -f mysql-compose.yml up -d
-cd ../spring-mysql-demo && mvn spring-boot:run
+cd devops && docker compose -f mysql-compose.yml up -d
+cd ../examples/spring-mysql-demo && mvn spring-boot:run
 
 # 启动 Redis
-cd ../docker-compose && docker compose -f redis-compose.yml up -d
-cd ../spring-redis-demo && mvn spring-boot:run
+cd ../../devops && docker compose -f redis-compose.yml up -d
+cd ../examples/spring-redis-demo && mvn spring-boot:run
 ```
 
 ### 3. 框架核心篇

@@ -8,7 +8,7 @@
 
 ### 修改 MySQL 配置
 
-编辑 `examples/docker-compose/mysql-compose.yml`：
+编辑 `devops/mysql-compose.yml`：
 
 ```yaml
 services:
@@ -26,7 +26,7 @@ services:
 
 ### 添加新中间件
 
-在 `examples/docker-compose/` 创建新的 compose 文件：
+在 `devops/` 创建新的 compose 文件：
 
 ```yaml
 # rabbitmq-compose.yml

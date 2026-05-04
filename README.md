@@ -45,7 +45,7 @@ Spring Security + JWT / AOP / Actuator / 日志体系 / 单元测试 / OpenAPI /
 
 ```bash
 # 启动所有中间件
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml up -d
 
 # 运行某个示例项目

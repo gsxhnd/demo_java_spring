@@ -10,7 +10,7 @@
 
 ### Docker Compose 配置
 
-中间件配置集中在 `examples/docker-compose/` 目录：
+中间件配置集中在 `devops/` 目录：
 
 | 文件 | 服务 | 端口 |
 |------|------|------|
@@ -80,7 +80,7 @@ server:
 
 ```bash
 # 1. 启动全部中间件
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml up -d
 
 # 2. 查看运行状态

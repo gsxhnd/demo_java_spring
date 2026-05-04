@@ -82,7 +82,7 @@ docker compose version
 ### 一次性启动所有中间件
 
 ```bash
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml up -d
 ```
 
@@ -102,7 +102,7 @@ docker compose -f full-stack-compose.yml up -d mysql redis
 
 ```bash
 # 验证中间件状态
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml ps
 
 # 运行一个示例项目验证环境

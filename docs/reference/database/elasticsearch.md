@@ -131,7 +131,7 @@ spring:
 
 启动依赖：
 ```bash
-cd examples/docker-compose && docker compose -f elasticsearch-compose.yml up -d
+cd devops && docker compose -f elasticsearch-compose.yml up -d
 ```
 
 ## 7. 参考链接 / References

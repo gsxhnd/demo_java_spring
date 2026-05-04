@@ -85,7 +85,7 @@ A: 检查 `application.yml` 中的 `spring.jpa.hibernate.ddl-auto` 配置：
 A:
 ```bash
 # 停止并删除容器和卷
-cd examples/docker-compose
+cd devops
 docker compose -f mysql-compose.yml down -v
 
 # 重新启动（将重新创建数据库）

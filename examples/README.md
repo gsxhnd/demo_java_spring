@@ -24,7 +24,7 @@
 
 ## Docker Compose
 
-所有中间件的 Docker Compose 文件位于 [docker-compose/](docker-compose/) 目录：
+所有中间件的 Docker Compose 文件位于 [devops/](../devops/) 目录：
 
 | 文件 | 服务 | 端口 |
 |---|---|---|
@@ -41,7 +41,7 @@
 
 ```bash
 # 启动单个中间件
-cd docker-compose
+cd ../devops
 docker compose -f mysql-compose.yml up -d
 
 # 启动所有中间件
@@ -58,7 +58,7 @@ docker compose -f full-stack-compose.yml down
 
 ```bash
 # 1. 先启动对应的中间件
-cd docker-compose && docker compose -f mysql-compose.yml up -d && cd ..
+cd ../devops && docker compose -f mysql-compose.yml up -d && cd ../examples
 
 # 2. 运行示例项目
 cd spring-mysql-demo

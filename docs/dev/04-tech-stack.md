@@ -70,7 +70,7 @@
 ### 步骤
 
 1. 克隆仓库：`git clone <仓库地址>`
-2. 启动中间件：`cd examples/docker-compose && docker compose -f full-stack-compose.yml up -d`
+2. 启动中间件：`cd devops && docker compose -f full-stack-compose.yml up -d`
 3. 运行示例：`cd examples/spring-mvc-demo && mvn spring-boot:run`
 4. 访问服务：浏览器打开 `http://localhost:8080`
 
@@ -78,7 +78,7 @@
 
 ```bash
 # 启动所有中间件
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml up -d
 
 # 运行指定示例项目
@@ -95,7 +95,7 @@ mvn compile
 mvn package -DskipTests
 
 # 停止所有中间件
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml down
 ```
 
@@ -115,9 +115,9 @@ spring-ecosystem-learning/
 │       ├── framework/     # 框架核心篇
 │       ├── microservice/  # 微服务篇
 │       └── advanced/      # 进阶主题篇
+├── devops/                # 中间件编排
 ├── examples/              # 示例项目
 │   ├── README.md
-│   ├── docker-compose/    # 中间件编排
 │   ├── spring-ioc-demo/
 │   ├── spring-mvc-demo/
 │   ├── spring-mysql-demo/

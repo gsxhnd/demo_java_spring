@@ -29,9 +29,9 @@ git clone <仓库地址>
 cd demo_java_spring
 
 # 2. 启动中间件
-cd examples/docker-compose
+cd devops
 docker compose -f mysql-compose.yml up -d
-cd ../..
+cd ..
 
 # 3. 运行第一个示例项目
 cd examples/spring-mysql-demo
@@ -58,7 +58,7 @@ curl http://localhost:8080/actuator/health
 # 停止 Spring Boot：Ctrl+C
 
 # 停止 MySQL 容器
-cd examples/docker-compose
+cd devops
 docker compose -f mysql-compose.yml down
 ```
 
@@ -67,7 +67,7 @@ docker compose -f mysql-compose.yml down
 如果你想一次性启动所有数据库和中间件：
 
 ```bash
-cd examples/docker-compose
+cd devops
 docker compose -f full-stack-compose.yml up -d
 ```
 
@@ -106,8 +106,8 @@ demo_java_spring/
 │       ├── microservice/          ← 微服务篇
 │       └── advanced/              ← 进阶主题篇
 │
+├── devops/                        ← 中间件 Docker Compose 文件
 ├── examples/                      ← 示例项目（独立可运行）
-│   ├── docker-compose/            ← 中间件 Docker Compose 文件
 │   ├── spring-mysql-demo/         ← MySQL + JPA + MyBatis-Plus
 │   ├── spring-redis-demo/         ← Redis + Spring Cache
 │   └── ...

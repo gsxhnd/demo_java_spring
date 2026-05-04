@@ -123,11 +123,11 @@ spring:
 **启动依赖：**
 ```bash
 # MySQL 模式（默认）
-cd examples/docker-compose && docker compose -f mysql-compose.yml up -d
+cd devops && docker compose -f mysql-compose.yml up -d
 mvn spring-boot:run
 
 # PostgreSQL 模式
-cd examples/docker-compose && docker compose -f postgresql-compose.yml up -d
+cd devops && docker compose -f postgresql-compose.yml up -d
 mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
 

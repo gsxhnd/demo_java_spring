@@ -59,7 +59,7 @@ Caused by: java.net.ConnectException: Connection refused
 
   1. 确认 Docker 中间件正在运行：
      ```bash
-     cd examples/docker-compose
+     cd devops
      docker compose -f full-stack-compose.yml ps
      ```
   2. 检查 `application.yml` 中的 host/port/username/password 是否与 Docker Compose 配置一致

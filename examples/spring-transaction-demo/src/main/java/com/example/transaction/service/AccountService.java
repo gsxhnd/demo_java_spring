@@ -40,7 +40,7 @@ public class AccountService {
     /**
      * 创建账户（带事务，只读优化）
      */
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = Exception.class)
     public Account createAccount(String accountNo, String holderName, BigDecimal initialBalance) {
         Account account = Account.builder()
                 .accountNo(accountNo)

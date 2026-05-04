@@ -140,7 +140,123 @@ Filter → DispatcherServlet → preHandle → Controller → postHandle → aft
 | `spring.jackson.default-property-inclusion` | — | JSON null 值处理 |
 | `spring.mvc.throw-exception-if-no-handler-found` | `true` | 404 抛异常 |
 
-## 4. 进阶要点 / Advanced Topics
+## 4. 设计决策与实现原理 / Design Decisions
+
+> 以下结合 [`examples/spring-mvc-demo/`](../../examples/spring-mvc-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
+
+### 4.1 为什么用 `ResponseBodyAdvice` 自动包装而非每个 Controller 手动调用 `ApiResponse.success()`？
+
+```java
+// GlobalResponseBodyAdvice.java — 一次配置，全局生效
+@RestControllerAdvice
+public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+    @Override
+    public Object beforeBodyWrite(...) {
+        return ApiResponse.success(body);
+    }
+}
+```
+
+- **DRY 原则**：避免每个 Controller 方法末尾都写 `return ApiResponse.success(data)`
+- **防止遗漏**：人工包装容易忘记，`ResponseBodyAdvice` 保证所有响应都被统一格式
+- **关注点分离**：Controller 只返回业务数据，响应格式是横切关注点，应由 Advice 层处理
+- **`supports()` 防重复包装**：检查返回值类型，若已是 `ApiResponse` 则跳过（如 `GlobalExceptionHandler` 的返回值），避免出现 `ApiResponse(code=0, data=ApiResponse(code=500, ...))` 这种嵌套结构
+
+### 4.2 为什么 `GlobalExceptionHandler` 中异常处理方法有特定顺序？
+
+```java
+@ExceptionHandler(MethodArgumentNotValidException.class)  // 400 校验失败
+@ExceptionHandler(UserNotFoundException.class)            // 404 资源不存在
+@ExceptionHandler(IllegalArgumentException.class)          // 400 参数错误
+@ExceptionHandler(Exception.class)                         // 500 兜底
+```
+
+Spring 选择 `@ExceptionHandler` 时按**异常类型匹配精度**决定（不是按方法声明顺序）。从最具体的子类到最通用的父类排列，是**可读性约定**——让维护者一眼看清异常处理的层级结构。
+
+### 4.3 为什么使用 `MultipartFile` (单文件) 和 `MultipartFile[]` (多文件) 两个独立接口？
+
+教学目的——分别展示：
+- **单文件上传**：`@RequestParam("file") MultipartFile file` — 直接绑定到单个 `MultipartFile`
+- **多文件上传**：`@RequestParam("files") MultipartFile[] files` — Spring 自动将多个同名参数收集为数组
+
+实际项目中通常会合并为一个接口，通过参数类型灵活处理。
+
+### 4.4 为什么文件下载使用 `ResponseEntity<byte[]>` 而非 `ApiResponse<byte[]>`？
+
+```java
+@GetMapping("/download/{filename}")
+public ResponseEntity<byte[]> downloadFile(@PathVariable String filename) {
+    // ...
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(bytes);
+}
+```
+
+- **二进制数据不应包装为 JSON**：`ApiResponse` 是 JSON 外壳，文件内容是二进制流
+- **需要自定义响应头**：文件下载必须设置 `Content-Disposition`、`Content-Type` 等头
+- **`ResponseEntity` 提供完整的 HTTP 响应控制**：绕过 `ResponseBodyAdvice` 的统一包装（因为返回类型不是业务数据）
+
+### 4.5 为什么拦截器排除 `/api/health` 和 `/api/public/**`？
+
+```java
+registry.addInterceptor(loggingInterceptor)
+        .addPathPatterns("/api/**")
+        .excludePathPatterns("/api/health", "/api/public/**");
+```
+
+- **健康检查被高频调用**（K8s liveness/readiness probe 每 10-30 秒一次），日志打印会造成噪音
+- **公开接口无需认证/审计开销**：`/api/public/*` 的请求不需要安全拦截，排除后减少不必要的计算
+- **`excludePathPatterns` 在拦截器层面即短路**，被排除的路径不会进入 `preHandle` / `postHandle` / `afterCompletion`
+
+### 4.6 为什么使用 HandlerInterceptor 而非 Filter？
+
+| 对比维度 | Filter (Servlet) | HandlerInterceptor (Spring MVC) |
+|---------|------------------|-------------------------------|
+| 能获取 Handler 信息 | 否 | 是 (`Object handler` 参数) |
+| 能访问 Spring Bean | 需额外配置 | 天然可注入 (`@Component`) |
+| URL 模式匹配 | 通配符 (`/*`) | Ant 风格 (`/api/**`)，支持排除路径 |
+| 请求体读取 | 会消费 InputStream | 不消费（通过 `ContentCachingRequestWrapper` 读取） |
+
+对于"记录请求耗时"这个场景，Interceptor 更合适——它能拿到 Handler 方法信息用于日志。
+
+### 4.7 为什么开启虚拟线程 `server.threading.virtual-thread-enabled: true`？
+
+Java 21 的虚拟线程（Project Loom）将线程资源从操作系统线程池中解耦。Spring Boot 4.0 自动检测 Java 21+，配合此配置让 Tomcat 使用虚拟线程执行器：
+- **高并发 I/O 密集型**：成百上千个虚拟线程共享少量 OS 线程，内存开销极低
+- **无需调整线程池大小**：虚拟线程按需创建，不再需要 `server.tomcat.threads.max` 调优
+
+### 4.8 为什么 `spring.jackson.default-property-inclusion: non_null`？
+
+- **减小 JSON 体积**：跳过 `null` 字段，网络传输更高效
+- **前端友好**：避免 `"field": null` 造成的类型误判（`typeof null === "object"`）
+- **API 语义清晰**："未提供"和"提供了但为 null"在 JSON 层面区分开
+
+### 4.9 为什么日志拦截器用 `request.setAttribute("startTime")` 传递计时起点？
+
+```java
+// preHandle
+request.setAttribute("startTime", System.currentTimeMillis());
+
+// postHandle
+Long startTime = (Long) request.getAttribute("startTime");
+long duration = System.currentTimeMillis() - startTime;
+```
+
+`preHandle` 和 `postHandle` 是同一个 `HttpServletRequest` 的不同生命周期回调，但方法的返回值无法传参。`request.setAttribute()` 利用 Servlet 规范中 request 属性的请求级作用域，是最简单的跨回调数据传递方式。
+
+### 4.10 为什么 `WebMvcConfig` 中用 `allowedOriginPatterns("*")` 而非 `allowedOrigins("*")`？
+
+```java
+registry.addMapping("/api/**")
+        .allowedOriginPatterns("*")    // ← 不是 allowedOrigins("*")
+        .allowCredentials(true);
+```
+
+`allowedOrigins("*")` 与 `allowCredentials(true)` 互斥（CORS 规范禁止通配来源 + 凭据）。`allowedOriginPatterns` 支持通配符模式匹配，是 `allowCredentials(true)` 场景下实现跨域的正确方式。Demo 中设置 `allowCredentials(true)` 是为了演示完整配置，生产环境应限制具体的 origin 列表。
+
+## 5. 进阶要点 / Advanced Topics
 
 - **`ResponseBodyAdvice`** — 统一包装响应体，避免每个 Controller 手动包装
 - **`RequestBodyAdvice`** — 请求体预处理，如解密、日志记录
@@ -152,7 +268,7 @@ Filter → DispatcherServlet → preHandle → Controller → postHandle → aft
 - **接口版本管理** — URL 路径版本 (`/api/v1/`) vs Header 版本 vs 自定义注解
 - **`ProblemDetail`（RFC 7807）** — Spring Boot 4.x 标准错误响应格式，统一异常返回结构
 
-## 5. 常见问题 / FAQ
+## 6. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -164,20 +280,20 @@ Filter → DispatcherServlet → preHandle → Controller → postHandle → aft
 | 文件上传超限 | 默认 1MB | 调整 `spring.servlet.multipart.max-file-size` |
 | 拦截器不生效 | 未注册到 `WebMvcConfigurer` | 实现 `addInterceptors` 方法注册 |
 
-## 6. 示例项目 / Example
+## 7. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-mvc-demo/`](../../examples/spring-mvc-demo/)（待创建）
+> 示例项目位于 [`examples/spring-mvc-demo/`](../../examples/spring-mvc-demo/)
 >
-> 将演示：RESTful CRUD、参数校验、统一异常处理、统一响应包装、拦截器、文件上传下载
+> 已演示：RESTful CRUD、参数校验（`@Valid` + Jakarta Validation）、统一异常处理（`@RestControllerAdvice`）、统一响应包装（`ResponseBodyAdvice`）、拦截器（`HandlerInterceptor` 日志与计时）、CORS 全局配置、文件上传下载（`MultipartFile` / `ResponseEntity<byte[]>`）、虚拟线程
 
-## 7. 参考链接 / References
+## 8. 参考链接 / References
 
 - [Spring Framework Reference — Web MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html)
 - [Spring Boot Reference — Web](https://docs.spring.io/spring-boot/reference/web/servlet.html)
 - [Baeldung — Spring MVC Tutorial](https://www.baeldung.com/spring-mvc-tutorial)
 - [Baeldung — Spring Validation](https://www.baeldung.com/spring-boot-bean-validation)
 
-## 8. 下一步
+## 9. 下一步
 
 掌握了 MVC 开发之后，下一步了解 Spring Boot 的自动配置机制 — 理解 `@SpringBootApplication` 背后的魔法，学会通过 Profile 管理多环境配置，以及如何自定义 Starter。
 

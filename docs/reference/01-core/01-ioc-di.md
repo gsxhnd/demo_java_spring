@@ -113,7 +113,86 @@ Bean 就绪，放入容器
 | `spring.main.lazy-initialization` | `false` | 全局懒加载（加速启动，延迟发现问题） |
 | `spring.main.allow-circular-references` | `false` | 是否允许循环依赖（Boot 2.6+ 默认禁止） |
 
-## 4. 进阶要点 / Advanced Topics
+## 4. 设计决策与实现原理 / Design Decisions
+
+> 以下结合 [`examples/spring-ioc-demo/`](../../examples/spring-ioc-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
+
+### 4.1 为什么用 `ObjectProvider<EmailService>` + `@Lazy` 而不是 field `@Autowired @Lazy`？
+
+```java
+// ✅ 演示中的做法：构造器注入 + ObjectProvider + @Lazy
+public UserService(UserRepository userRepository,
+                   @Lazy ObjectProvider<EmailService> emailServiceProvider) { ... }
+```
+
+- **`ObjectProvider` 是函数式的延迟获取**：调用 `getIfAvailable()` 时才真正从容器获取 Bean，语义明确
+- **Field `@Lazy`** 只延迟注入代理对象，但字段上的 `@Autowired` 容易在单元测试中被忽略（需要反射注入）
+- **构造器注入更可测试**：测试时可以手动传入一个 Mock 的 `ObjectProvider`，无需启动 Spring 容器
+- **显式 > 隐式**：`ObjectProvider` 明确表达了"这个依赖可能不会被用到"的意图
+
+### 4.2 为什么 `@ComponentScan(basePackages = "com.example.ioc")` 显式指定？
+
+默认 `@SpringBootApplication` 只扫描启动类所在包及子包。显式指定 `basePackages` 是教学目的——让学习者一眼看清扫描范围，避免因包结构不对导致的 Bean 找不到问题。
+
+### 4.3 为什么 prototype scope 用 `System.currentTimeMillis()` 作为 ID？
+
+```java
+@Bean @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public User prototypeUser() {
+    return new User(System.currentTimeMillis(), "Prototype User", ...);
+}
+```
+
+每次 `getBean()` 调用都会执行 `@Bean` 方法，生成不同的时间戳 ID。通过 `/api/ioc/scope-demo` 接口对比两次获取的 Bean 引用相等性 (`==`)，直观证明 prototype 每次都创建新实例。
+
+### 4.4 为什么 `DevEmailService` 同时标注 `@Profile({"dev", "default"})`？
+
+`"default"` 是 Spring 的特殊 Profile：当没有任何 Profile 被显式激活时自动生效。加上 `"dev"` 后，无论是 `spring.profiles.active=dev` 还是未设置任何 Profile，都能注册该 Bean——保证开箱即用。
+
+### 4.5 为什么 `CustomBeanPostProcessor` 用 `@Component` 注册？
+
+`BeanPostProcessor` 本身也是一个 Spring Bean。用 `@Component` 让容器自动发现并注册它，Spring 会将其应用于**所有**其他 Bean 的初始化过程。这展示了 Spring AOP 的底层基础——`BeanPostProcessor` 不需要特殊注册方式，只是普通的 Bean。
+
+### 4.6 为什么 IoC Demo 选择 Web 模式（`@RestController`）而非纯 CLI？
+
+命令行 `ApplicationRunner` 也能打印生命周期日志，但 Web API 提供了**交互式验证**能力：
+- `/api/ioc/scope-demo` → 对比 singleton vs prototype 的引用相等性
+- `/api/ioc/lazy-demo` → 触发延迟注入，观察 `EmailService` 何时被创建
+- `/api/ioc/message` → 验证 `@Primary` 选择行为
+
+这些行为通过浏览器或 curl 直接触发，比看启动日志更直观。
+
+### 4.7 为什么 `application.yml` 开启 `allow-bean-definition-overriding: true`？
+
+Demo 中 `AppConfig` 注册了两个同类型的 `MessageService` Bean（一个标注 `@Primary`，另一个不标注）。开启 Bean 覆盖允许同一个 Bean 名称被后续定义覆盖，配合 `@Primary` 展示类型冲突解决机制。**生产环境应保持默认值 `false`，避免意外覆盖。**
+
+### 4.8 为什么用 `ConcurrentHashMap` + `AtomicLong` 做内存存储？
+
+- **线程安全**：`ConcurrentHashMap` 保证多线程并发访问安全
+- **零外部依赖**：无需安装数据库，clone 即可运行
+- **代码精简**：Demo 的重点是 IoC 概念，不应被数据库配置分散注意力
+
+### 4.9 为什么全项目坚持构造器注入（`private final` + constructor）？
+
+```java
+// ✅ 推荐：构造器注入
+private final UserRepository userRepository;
+public UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
+}
+```
+
+| 原因 | 说明 |
+|------|------|
+| **不可变性** | `final` 字段保证注入后不会被篡改 |
+| **易测试** | 测试时 `new UserService(mockRepo)` 即可，无需启动 Spring 容器 |
+| **编译期安全** | 构造器强制传入依赖，不会出现 NPE |
+| **防循环依赖** | 构造器注入的循环依赖在容器启动时就报错（fail-fast），而非运行时 |
+| **Spring 官方推荐** | 从 Spring Framework 4.3 起，单构造器场景无需 `@Autowired` |
+
+## 5. 进阶要点 / Advanced Topics
+
+> 以下进阶要点为概念性说明，具体代码演示见上方 [设计决策与实现原理](#4-设计决策与实现原理--design-decisions) 中引用的示例项目。
 
 - **BeanPostProcessor** — 在 Bean 初始化前后插入自定义逻辑，AOP、事务代理都基于此机制
 - **BeanFactoryPostProcessor** — 在 Bean 实例化之前修改 BeanDefinition，如 PropertySourcesPlaceholderConfigurer 处理 `${}` 占位符
@@ -124,7 +203,7 @@ Bean 就绪，放入容器
 - **`ObjectProvider<T>`** — 安全的延迟/可选依赖获取，替代 `@Autowired(required=false)`
 - **构造器绑定** — `@ConfigurationProperties` 支持 Record 类型，不可变配置
 
-## 5. 常见问题 / FAQ
+## 6. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -135,20 +214,20 @@ Bean 就绪，放入容器
 | Bean 覆盖报错 | Boot 2.1+ 默认禁止覆盖 | 设置 `allow-bean-definition-overriding=true` 或重命名 |
 | `@PostConstruct` 中依赖未就绪 | 依赖的 Bean 还在初始化 | 改用 `ApplicationRunner` 或 `@EventListener(ApplicationReadyEvent)` |
 
-## 6. 示例项目 / Example
+## 7. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-core-demo/`](../../examples/spring-core-demo/)（待创建）
+> 示例项目位于 [`examples/spring-ioc-demo/`](../../examples/spring-ioc-demo/)
 >
-> 将演示：Bean 注册方式、生命周期回调、作用域、条件装配、循环依赖处理
+> 已演示：Bean 注册方式（`@Component` / `@Bean` / `@Configuration`）、构造器注入、`ObjectProvider` 延迟注入、`@Primary` 类型冲突解决、singleton vs prototype 作用域、`@Profile` 环境切换、`@PostConstruct` / `@PreDestroy` 生命周期回调、`@ConditionalOn*` 条件装配、`BeanPostProcessor` 拦截
 
-## 7. 参考链接 / References
+## 8. 参考链接 / References
 
 - [Spring Framework Reference — IoC Container](https://docs.spring.io/spring-framework/reference/core/beans.html)
 - [Spring Framework Reference — Bean Scopes](https://docs.spring.io/spring-framework/reference/core/beans/factory-scopes.html)
 - [Baeldung — Spring Dependency Injection](https://www.baeldung.com/spring-dependency-injection)
 - [Baeldung — Circular Dependencies in Spring](https://www.baeldung.com/circular-dependencies-in-spring)
 
-## 8. 下一步
+## 9. 下一步
 
 理解了 IoC 容器如何管理 Bean 之后，下一步学习 Spring MVC — 了解 Spring 如何基于 IoC 容器构建 Web 层，将 Bean 暴露为 RESTful API。
 

@@ -109,7 +109,161 @@ ServiceA.methodA()  @Transactional(REQUIRED)
 | `logging.level.org.springframework.transaction` | — | 设为 `TRACE` 可查看事务日志 |
 | `logging.level.org.springframework.jdbc.datasource.DataSourceTransactionManager` | — | JDBC 事务详细日志 |
 
-## 4. 进阶要点 / Advanced Topics
+## 4. 设计决策与实现原理 / Design Decisions
+
+> 以下结合 [`examples/spring-transaction-demo/`](../../examples/spring-transaction-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
+
+### 4.1 为什么选择 `JdbcTemplate` 而非 JPA 来做事务 Demo？
+
+```java
+@Repository
+public class AccountRepository {
+    private final JdbcTemplate jdbcTemplate;
+    public void updateBalance(String accountNo, BigDecimal newBalance) {
+        jdbcTemplate.update("UPDATE account SET balance = ? WHERE account_no = ?", ...);
+    }
+}
+```
+
+- **事务边界更清晰**：JPA 的持久化上下文（Persistence Context）会延迟 SQL 执行，事务边界和实际 SQL 执行时机可能分离，不利于教学观察
+- **直接控制 SQL**：`JdbcTemplate` 每条 SQL 立即执行，配合 `TRACE` 日志可直接看到事务的 begin/commit/rollback
+- **无 ORM 干扰**：JPA 的脏检查、一级缓存、flush 策略等机制会增加理解事务的复杂度
+
+### 4.2 为什么使用 H2 内存数据库？
+
+- **零环境依赖**：`clone` + `mvn spring-boot:run` 即可运行，无需安装 MySQL/PostgreSQL
+- **事务支持完善**：H2 完整支持 ACID 事务（`SET MODE=MySQL` 兼容语法）
+- **`DB_CLOSE_DELAY=-1`**：JVM 关闭前保持数据库不销毁，支持 H2 Console 在应用运行期间查看数据
+- **`ddl: create-drop`**：每次启动重建表结构，保证 Demo 的可重复性——测试数据状态总是已知的
+
+### 4.3 为什么显式添加 `@EnableTransactionManagement`？
+
+```java
+@SpringBootApplication
+@EnableTransactionManagement   // Spring Boot 自动配置已包含，此处显式声明以示强调
+public class SpringTransactionDemoApplication { ... }
+```
+
+Spring Boot 的 `DataSourceTransactionManagerAutoConfiguration` 会在 classpath 有 `DataSource` 时自动启用事务管理。显式添加是为了**教学强调**——让学习者注意到"声明式事务需要显式开启"这个知识点，避免误以为 `@Transactional` 是 Spring 内置的开箱即用能力。
+
+### 4.4 为什么显式设置 `rollbackFor = Exception.class`？
+
+```java
+@Transactional(rollbackFor = Exception.class)   // ← 显式指定
+public void transfer(String from, String to, BigDecimal amount) { ... }
+```
+
+Spring 事务的默认回滚策略：**仅对 `RuntimeException` 和 `Error` 回滚**，对 checked exception（如 `IOException`、`SQLException`）不回滚。这是 Spring 团队的历史设计选择（符合 EJB 传统），但在实际业务中：
+
+- 很多 checked exception 同样意味着数据不一致，应该回滚
+- `rollbackFor = Exception.class` 是**业界最佳实践**——让所有异常都触发回滚
+- Demo 中 `processTransfer()` 抛出的 `RuntimeException` 虽然默认就会回滚，但显式设置 `rollbackFor` 培养了"必加"的编码习惯
+
+### 4.5 为什么 `logOperation()` 使用 `REQUIRES_NEW`？
+
+```java
+@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+public void logOperation(String operation, String entityType, Long entityId, String details) {
+    operationLogRepository.save(logEntry);
+}
+```
+
+这是事务 Demo 中最关键的演示点：
+
+- **审计日志必须独立于业务事务**：转账失败回滚时，操作日志也应被保留（用于问题追溯）
+- **`REQUIRES_NEW` 挂起当前事务**：创建一个全新的独立事务，提交/回滚不受外部事务影响
+- **典型场景**：订单取消→主事务回滚库存和订单→但"取消操作"这条日志仍写入数据库
+
+### 4.6 为什么 `OrderService` 中 `logOperation()` 调用被 `try-catch` 包裹？
+
+```java
+try {
+    accountService.logOperation("CREATE_ORDER", "Order", order.getId(), ...);
+} catch (Exception e) {
+    log.warn("日志记录失败: {}", e.getMessage());  // 不向上抛
+}
+```
+
+即使日志写入使用了 `REQUIRES_NEW`（独立事务），如果日志写入本身失败（如数据库连接断开），异常仍会传播到 `OrderService` 并触发主事务回滚。`try-catch` 确保：
+- **日志写入失败不影响业务**："日志丢了可以补，订单丢了是事故"
+- **防御性编程**：非核心操作不应拖垮核心流程
+
+### 4.7 为什么 `readOnly = true` 只加在查询方法上？
+
+```java
+@Transactional(readOnly = true)
+public List<Account> findAll() { return accountRepository.findAll(); }
+```
+
+- **JPA 场景**：`readOnly = true` 关闭 Hibernate 的脏检查（Dirty Checking），减少内存占用
+- **JDBC 场景**：`DataSourceTransactionManager` 调用 `Connection.setReadOnly(true)`，部分数据库驱动会据此优化（如路由到只读从库）
+- **语义信号**：明确标注"此方法不修改数据"，代码审查者一目了然
+- **注意**：Demo 中 `createAccount()` 曾误标 `readOnly = true`（该处为写入操作），这是一个反面教材——`readOnly` 不能无脑添加
+
+### 4.8 为什么用 `CommandLineRunner` 而非 `@PostConstruct` 初始化数据？
+
+```java
+@Bean
+public CommandLineRunner initData(AccountService accountService) {
+    return args -> accountService.initTestData();
+}
+```
+
+| 对比 | `@PostConstruct` | `CommandLineRunner` |
+|------|------------------|---------------------|
+| 触发时机 | Bean 初始化完成后（单 Bean 级别） | 应用启动完成后（全局级别） |
+| 数据源就绪 | 不确定（DataSource 可能未初始化） | 保证（Spring Boot 自动配置已完成） |
+| 事务支持 | 不支持（不在 Spring 代理内） | 支持（`initTestData()` 上的 `@Transactional` 生效） |
+
+Demo 需要事务性地插入初始化数据，因此必须用 `CommandLineRunner`。
+
+### 4.9 为什么事务日志设置为 `TRACE` 级别？
+
+```yaml
+logging:
+  level:
+    org.springframework.transaction: TRACE
+    org.springframework.jdbc.datasource.DataSourceTransactionManager: TRACE
+```
+
+`TRACE` 级别会打印每次事务的完整生命周期：
+```
+TRACE o.s.t.i.TransactionInterceptor - Getting transaction for [...]
+TRACE o.s.j.d.DataSourceTransactionManager - Acquired Connection [...] for JDBC transaction
+TRACE o.s.j.d.DataSourceTransactionManager - Switching JDBC Connection [...] to manual commit
+TRACE o.s.t.i.TransactionInterceptor - Completing transaction for [...] after [...]
+TRACE o.s.j.d.DataSourceTransactionManager - Initiating transaction commit
+```
+
+这些日志是学习事务原理最直观的教学材料——从控制台就能看到事务的获取、提交、回滚全过程。
+
+### 4.10 为什么 `open-in-view: false` 即使项目用 `JdbcTemplate` 也设置？
+
+```yaml
+spring:
+  jpa:
+    open-in-view: false
+```
+
+虽然 `spring-transaction-demo` 使用 `JdbcTemplate` 而非 JPA（`open-in-view` 对 JDBC 无影响），但这是项目约定的编码规范（见 [AGENTS.md](AGENTS.md)）。即使当前不使用 JPA，也预设了"如果将来引入 JPA，该配置已正确"。
+
+### 4.11 为什么跨服务调用 `@Transactional` 能生效（`OrderService` 调 `AccountService`）？
+
+```java
+// OrderService (Bean A)
+accountService.deposit(fromAccountNo, amount);  // ✅ 事务生效
+
+// 如果改成自调用：
+this.internalMethod();  // ❌ 事务不生效（未经过代理）
+```
+
+关键区别在于对象引用：
+- `accountService` 是 Spring 注入的**代理对象**（CGLIB 代理），调用经过代理 → 事务拦截器生效
+- `this.internalMethod()` 是**原始对象的直接引用**，不经过代理 → 事务拦截器不生效
+
+这是 Demo 中 `OrderService` 和 `AccountService` 分属两个类的设计原因——展示正确的跨 Bean 事务调用模式。
+
+## 5. 进阶要点 / Advanced Topics
 
 - **`readOnly = true` 优化** — JPA 关闭脏检查（Dirty Checking），JDBC 可能走从库，MySQL 优化查询计划
 - **大事务拆分** — 避免在 `@Transactional` 方法中做 RPC、文件 IO 等耗时操作，缩短事务持有连接的时间
@@ -119,7 +273,7 @@ ServiceA.methodA()  @Transactional(REQUIRED)
 - **OSIV（Open Session In View）** — Spring Boot 默认开启，会延长数据库连接持有时间，建议生产关闭 `spring.jpa.open-in-view=false`
 - **事务事件** — `@TransactionalEventListener` 在事务提交后触发事件，适合发送通知、更新缓存等
 
-## 5. 常见问题 / FAQ
+## 6. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -130,20 +284,20 @@ ServiceA.methodA()  @Transactional(REQUIRED)
 | 并发更新丢失 | 缺少乐观锁/悲观锁 | JPA `@Version` 乐观锁或 `SELECT FOR UPDATE` |
 | 多数据源事务混乱 | 使用了错误的事务管理器 | 显式指定 `transactionManager` |
 
-## 6. 示例项目 / Example
+## 7. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-transaction-demo/`](../../examples/spring-transaction-demo/)（待创建）
+> 示例项目位于 [`examples/spring-transaction-demo/`](../../examples/spring-transaction-demo/)
 >
-> 将演示：声明式事务、传播行为对比、事务失效场景复现、编程式事务、readOnly 优化
+> 已演示：声明式事务（`@Transactional`）、传播行为（`REQUIRED` / `REQUIRES_NEW`）、`rollbackFor` 显式设置、`readOnly` 查询优化、多表事务原子性（订单+账户扣款）、跨 Service 事务组合、事务失效场景（余额不足、业务规则拦截）、H2 内存数据库 + `JdbcTemplate`、`CommandLineRunner` 数据初始化
 
-## 7. 参考链接 / References
+## 8. 参考链接 / References
 
 - [Spring Framework Reference — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html)
 - [Spring Boot Reference — Transaction](https://docs.spring.io/spring-boot/reference/data/sql.html#data.sql.jpa-and-spring-data.transactional)
 - [Baeldung — Spring Transactional](https://www.baeldung.com/transaction-configuration-with-jpa-and-spring)
 - [Baeldung — Transaction Propagation](https://www.baeldung.com/spring-transactional-propagation-isolation)
 
-## 8. 下一步
+## 9. 下一步
 
 核心基础篇到此完成。接下来可以根据兴趣选择方向：
 

@@ -144,7 +144,134 @@ application.yml
 | `spring.main.banner-mode` | `console` | Banner 显示模式 |
 | `debug=true` | `false` | 打印自动配置报告 |
 
-## 4. 进阶要点 / Advanced Topics
+## 4. 设计决策与实现原理 / Design Decisions
+
+> 以下结合 [`examples/spring-autoconfig-demo/`](../../examples/spring-autoconfig-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
+
+### 4.1 为什么 Demo 项目没有 `META-INF/spring/...AutoConfiguration.imports` 文件？
+
+真正的 Spring Boot Starter 通过该文件声明自动配置类，由 `AutoConfigurationImportSelector` 加载。但 Demo 中 `CustomAutoConfiguration` 被 `@ComponentScan`（含在 `@SpringBootApplication` 中）扫描到，因此同样生效。
+
+**这是教学简化**——省去了创建 `META-INF/spring/` 目录和 imports 文件的步骤，让学习者聚焦于 `@ConditionalOn*` 注解本身。在正式 Starter 开发中，必须通过 imports 文件注册。
+
+### 4.2 为什么用 `@ConfigurationPropertiesScan` 而不是在每个 `@Configuration` 上加 `@EnableConfigurationProperties`？
+
+```java
+@SpringBootApplication
+@ConfigurationPropertiesScan   // ← 一次性全局扫描
+public class SpringAutoconfigDemoApplication { ... }
+```
+
+- **减少样板代码**：一个注解替代多处 `@EnableConfigurationProperties(AppProperties.class)`
+- **约定优于配置**：自动发现包路径下的所有 `@ConfigurationProperties` 类
+- **适合多模块项目**：新加配置类时无需修改已有配置类
+
+### 4.3 为什么 `AppProperties` 使用嵌套静态类 + 预初始化？
+
+```java
+@ConfigurationProperties(prefix = "app")
+public class AppProperties {
+    private final Greeting greeting = new Greeting();   // ← 预初始化，保证非 null
+    private final Feature feature = new Feature();
+    private final Cache cache = new Cache();
+}
+```
+
+- **嵌套类镜像 YAML 层级**：`app.greeting.message` 对应 `AppProperties.Greeting.message`，IDE 自动补全可直接导航
+- **预初始化防止 NPE**：即使用户未配置任何 `app.*`，`greeting`、`feature`、`cache` 也不为 null，内层默认值生效
+- **`final` 确保引用不可变**：嵌套对象引用不会被意外替换
+
+### 4.4 为什么 `@ConfigurationProperties` 要加 `@Validated`？
+
+```java
+@Data
+@Validated   // ← 启用 Jakarta Validation
+@ConfigurationProperties(prefix = "app")
+public class AppProperties {
+    @NotBlank(message = "问候语消息不能为空")
+    private String message = "Hello";
+}
+```
+
+- **启动时校验**：如果 YAML 中 `app.greeting.message:` 设为空字符串，应用启动立即失败（fail-fast），而非运行时才发现
+- **配合 `configuration-processor`**：`spring-boot-configuration-processor` 读取 `@NotBlank` 等注解生成 `spring-configuration-metadata.json`，IDE 可提示校验规则
+
+### 4.5 为什么 `FeatureService` 用 `@EventListener(ApplicationReadyEvent.class)` 而非 `@PostConstruct`？
+
+```java
+@EventListener(ApplicationReadyEvent.class)
+public void onApplicationReady() {
+    System.out.println("应用已就绪，功能状态: " + feature.isEnabled());
+}
+```
+
+| 对比 | `@PostConstruct` | `@EventListener(ApplicationReadyEvent)` |
+|------|------------------|----------------------------------------|
+| 触发时机 | Bean 初始化完成后 | **所有** Bean 初始化完成 + 容器就绪 |
+| 依赖安全 | 依赖的 Bean 可能还未就绪 | 所有 Bean 已就绪，包括自动配置的 Bean |
+| 适用场景 | Bean 自身资源初始化 | 依赖全局状态的启动后检查 |
+
+Demo 中需要在应用完全就绪后报告功能状态，因此选择 `ApplicationReadyEvent`。
+
+### 4.6 为什么 `GreetingService` 是纯 POJO（没有 `@Service` 注解）？
+
+```java
+// GreetingService.java — 没有任何 Spring 注解
+public class GreetingService {
+    public GreetingService(String message) { this.message = message; }
+}
+```
+
+**刻意为之**——展示 `@ConditionalOnMissingBean` 的核心机制：
+- Bean 由 `CustomAutoConfiguration.defaultGreetingService()` 方法注册
+- 用户可以自行创建带有 `@Service` 的 `GreetingService` 子类覆盖默认实现
+- 如果 `GreetingService` 自带 `@Service`，则 `@ConditionalOnMissingBean` 检测到已有 Bean，默认实现不会注册
+
+### 4.7 为什么同一 Controller 中同时使用 `@Value` 和 `@ConfigurationProperties`？
+
+```java
+@Value("${spring.application.name:unknown}")   // 简单值，宽松匹配
+private String applicationName;
+
+private final AppProperties appProperties;     // 结构化配置，类型安全
+```
+
+| 特性 | `@Value` | `@ConfigurationProperties` |
+|------|---------|--------------------------|
+| 适用场景 | 单个简单属性 | 一组相关属性 |
+| 类型安全 | 手动转换 | 自动绑定 |
+| IDE 提示 | 无 | 有（配合 processor） |
+| 校验支持 | 无 | `@Validated` 支持 |
+| 松散绑定 | 不支持 | 支持 |
+
+两种方式在同一 Controller 中共存，是为了**对比教学**：让学习者直观感受"单个值用 `@Value`，结构化配置用 `@ConfigurationProperties`"的选择依据。
+
+### 4.8 为什么 `@ConditionalOnProperty` 的 `matchIfMissing` 在 feature 和 cache 上不同？
+
+```java
+// feature 功能：默认关闭 → matchIfMissing = false（缺少配置时不注册）
+@ConditionalOnProperty(name = "app.feature.enabled", havingValue = "true", matchIfMissing = false)
+
+// cache 功能：默认开启 → matchIfMissing = true（缺少配置时仍然注册）
+@ConditionalOnProperty(name = "app.cache.enabled", havingValue = "true", matchIfMissing = true)
+```
+
+- **Feature（业务功能开关）**：保守策略——默认关闭，用户显式 `true` 才启用，防止未预期的功能泄露到生产环境
+- **Cache（性能优化）**：激进策略——默认开启，提供开箱即用的缓存加速，用户有特殊需求时可通过配置关闭
+
+这是 Spring Boot 自动配置中的常见模式：`matchIfMissing` 的值取决于该功能"默认开"还是"默认关"对用户更友好。
+
+### 4.9 为什么 `application.yml` 中开启 `debug` 级日志到 `org.springframework.boot.autoconfigure`？
+
+```yaml
+logging:
+  level:
+    org.springframework.boot.autoconfigure: DEBUG
+```
+
+启动时会输出**自动配置报告**（Positive/Negative matches），清晰展示每个自动配置类是否生效及其原因。这是排查"为什么某个 Bean 没有被自动注册"的最有效手段。
+
+## 5. 进阶要点 / Advanced Topics
 
 - **自动配置排除** — `@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})` 或 `spring.autoconfigure.exclude` 配置
 - **自动配置报告** — 启动时加 `--debug` 或设置 `debug=true`，查看 Positive/Negative matches
@@ -156,7 +283,7 @@ application.yml
 - **虚拟线程** — Spring Boot 4.0 默认在 Java 21+ 环境下启用虚拟线程，Tomcat 自动使用虚拟线程执行器
 - **Jackson 3 支持** — Spring Boot 4.0 引入 Jackson 3（`tools.jackson`），注意包名变化
 
-## 5. 常见问题 / FAQ
+## 6. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -167,20 +294,20 @@ application.yml
 | JAR 包太大 | 包含所有依赖 | 使用 Layered JAR + Docker 多阶段构建 |
 | 多模块项目扫描不到 Bean | 主类不在根包 | 调整包结构或显式 `@ComponentScan` |
 
-## 6. 示例项目 / Example
+## 7. 示例项目 / Example
 
-> 示例项目位于 [`examples/spring-boot-starter-demo/`](../../examples/spring-boot-starter-demo/)（待创建）
+> 示例项目位于 [`examples/spring-autoconfig-demo/`](../../examples/spring-autoconfig-demo/)
 >
-> 将演示：自定义 Starter、@ConfigurationProperties、Profile 切换、自动配置排除
+> 已演示：`@ConfigurationProperties` 类型安全绑定、嵌套配置类、`@Validated` 配置校验、`@ConditionalOnClass` / `@ConditionalOnMissingBean` / `@ConditionalOnProperty` 条件装配、`@ConfigurationPropertiesScan` 全局扫描、`ApplicationReadyEvent` 启动事件、多环境 Profile 切换（dev / test / prod）、`@Value` vs `@ConfigurationProperties` 对比
 
-## 7. 参考链接 / References
+## 8. 参考链接 / References
 
 - [Spring Boot Reference — Auto-configuration](https://docs.spring.io/spring-boot/reference/using/auto-configuration.html)
 - [Spring Boot Reference — Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html)
 - [Spring Boot Reference — Creating Your Own Starter](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html)
 - [Baeldung — Create a Custom Starter](https://www.baeldung.com/spring-boot-custom-starter)
 
-## 8. 下一步
+## 9. 下一步
 
 理解了自动配置原理之后，核心基础篇的最后一站是事务管理 — 掌握 `@Transactional` 的传播行为、隔离级别，以及生产环境中最常见的事务失效场景。
 

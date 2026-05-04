@@ -1,6 +1,0 @@
-spring:
-  datasource:
-    url: jdbc:clickhouse://localhost:8123/demo_db
-    username: default
-    password: clickhouse123
-    driver-class-name: com.clickhouse.jdbc.ClickHouseDriver

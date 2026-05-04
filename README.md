@@ -2,7 +2,7 @@
 
 > 一站式学习 Java Spring Boot + Spring Cloud 全生态
 
-本项目是一个系统化的 Spring 生态学习资料库，包含完整的中英对照文档和独立可运行的示例项目，覆盖数据库集成、微服务架构、框架核心能力三大板块。
+本项目是一个 Spring 生态学习资料库，包含完整的中英对照文档和独立可运行的示例项目。当前阶段聚焦 Spring 核心基础。
 
 ## 技术栈版本 / Version Matrix
 
@@ -21,17 +21,9 @@
 
 **[→ 进入文档 docs/README.md](docs/README.md)**
 
-### 数据库篇
+### 核心基础篇 (Phase 1)
 
-MySQL / PostgreSQL / Redis / MongoDB / Elasticsearch / ClickHouse / InfluxDB
-
-### 微服务篇
-
-Gateway / 服务发现 / 配置中心 / OpenFeign & gRPC / 熔断降级 / 分布式事务 / 消息队列 / OpenTelemetry
-
-### 框架核心篇
-
-Spring Security + JWT / AOP / Actuator / 日志体系 / 单元测试 / OpenAPI / MyBatis
+IoC & DI / Spring MVC / 自动配置与 Starter / 事务管理
 
 ## 示例项目 / Examples
 
@@ -44,12 +36,8 @@ Spring Security + JWT / AOP / Actuator / 日志体系 / 单元测试 / OpenAPI /
 **[→ 详细入门指南 docs/getting-started.md](docs/getting-started.md)**
 
 ```bash
-# 启动所有中间件
-cd devops
-docker compose -f full-stack-compose.yml up -d
-
-# 运行某个示例项目
-cd examples/spring-mysql-demo
+# 运行示例项目（核心基础篇无外部中间件依赖）
+cd examples/spring-ioc-demo
 mvn spring-boot:run
 ```
 

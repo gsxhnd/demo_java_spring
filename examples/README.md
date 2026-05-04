@@ -1,73 +1,27 @@
 # 示例项目 / Example Projects
 
-> 每个示例项目都是独立可运行的 Spring Boot 项目（目标版本 4.0.5 + Java 21，当前代码暂为 3.5.0 + Java 17，后续升级）
+> 核心基础篇示例项目，每个项目独立可运行（Spring Boot 4.0.5 + Java 21）
 
 ## 项目列表
 
-| 项目 | 数据库/中间件 | 核心技术 | 状态 |
-|---|---|---|---|
-| **核心基础（参考 [docs/core/](../docs/core/)）** | | | |
-| [spring-ioc-demo](spring-ioc-demo/) | - | IoC 容器、Bean 生命周期、作用域、条件装配 | 已创建 |
-| [spring-mvc-demo](spring-mvc-demo/) | - | RESTful API、参数校验、统一异常处理、拦截器 | 已创建 |
-| [spring-autoconfig-demo](spring-autoconfig-demo/) | - | 自动配置原理、@ConfigurationProperties、Profile | 已创建 |
-| [spring-transaction-demo](spring-transaction-demo/) | H2（内存） | 声明式事务、传播行为、事务失效场景 | 已创建 |
-| **数据库与中间件** | | | |
-| [spring-mysql-demo](spring-mysql-demo/) | MySQL | JPA + MyBatis-Plus | 已创建 |
-| [spring-redis-demo](spring-redis-demo/) | Redis | Spring Data Redis, Cache, 分布式锁 | 已创建 |
-| [spring-mongodb-demo](spring-mongodb-demo/) | MongoDB | Spring Data MongoDB, 聚合管道 | 已创建 |
-| [spring-es-demo](spring-es-demo/) | Elasticsearch | Spring Data ES, 全文搜索, 聚合 | 已创建 |
-| [spring-clickhouse-demo](spring-clickhouse-demo/) | ClickHouse | JDBC, 批量写入, 聚合查询 | 已创建 |
-| [spring-influxdb-demo](spring-influxdb-demo/) | InfluxDB | InfluxDB Client, Flux 查询 | 已创建 |
-| **待生成** | | | |
-| spring-security-demo | - | Spring Security + JWT | 待生成 |
-| spring-microservice-demo | 多中间件 | 微服务综合示例（多模块） | 待生成 |
-
-## Docker Compose
-
-所有中间件的 Docker Compose 文件位于 [devops/](../devops/) 目录：
-
-| 文件 | 服务 | 端口 |
-|---|---|---|
-| mysql-compose.yml | MySQL 8.0 | 3306 |
-| postgresql-compose.yml | PostgreSQL 16 | 5432 |
-| redis-compose.yml | Redis 7 | 6379 |
-| mongodb-compose.yml | MongoDB 7 | 27017 |
-| elasticsearch-compose.yml | ES 8.15 + Kibana | 9200, 5601 |
-| clickhouse-compose.yml | ClickHouse | 8123, 9000 |
-| influxdb-compose.yml | InfluxDB 2.7 | 8086 |
-| full-stack-compose.yml | 以上全部 | 所有端口 |
-
-### 使用方式
-
-```bash
-# 启动单个中间件
-cd ../devops
-docker compose -f mysql-compose.yml up -d
-
-# 启动所有中间件
-docker compose -f full-stack-compose.yml up -d
-
-# 按需启动（只启动 MySQL 和 Redis）
-docker compose -f full-stack-compose.yml up -d mysql redis
-
-# 停止
-docker compose -f full-stack-compose.yml down
-```
+| 项目 | 技术栈 | 说明 |
+|------|--------|------|
+| [spring-ioc-demo](spring-ioc-demo/) | ApplicationContext, @Component, @Autowired | IoC 容器、Bean 生命周期、作用域、条件装配 |
+| [spring-mvc-demo](spring-mvc-demo/) | @RestController, @Valid, @ControllerAdvice | RESTful API、参数校验、统一异常处理、拦截器 |
+| [spring-autoconfig-demo](spring-autoconfig-demo/) | @SpringBootApplication, @ConfigurationProperties, Profile | 自动配置原理、配置绑定、多环境切换 |
+| [spring-transaction-demo](spring-transaction-demo/) | @Transactional, Propagation, Isolation | 声明式事务、传播行为、事务失效场景 |
 
 ## 运行示例项目
 
 ```bash
-# 1. 先启动对应的中间件
-cd ../devops && docker compose -f mysql-compose.yml up -d && cd ../examples
-
-# 2. 运行示例项目
-cd spring-mysql-demo
+# 从 examples 目录进入任一项目
+cd spring-ioc-demo
 mvn spring-boot:run
 ```
 
 ## 通用说明
 
-- 目标版本：Spring Boot 4.0.5 + Java 21（当前代码暂为 3.5.0 + Java 17，后续升级）
-- 使用 Maven 构建
+- 版本：Spring Boot 4.0.5 + Java 21
+- 使用 Maven 构建，无 mvnw wrapper
 - 默认端口 8080（可在 application.yml 中修改）
-- 中间件连接信息与 Docker Compose 中的配置一致
+- 未使用外部中间件（spring-transaction-demo 使用 H2 内存数据库）

@@ -82,7 +82,7 @@ cd devops
 docker compose -f full-stack-compose.yml up -d
 
 # 运行指定示例项目
-cd examples/spring-mysql-demo
+cd examples/spring-mvc-demo
 mvn spring-boot:run
 
 # 运行测试
@@ -120,8 +120,7 @@ spring-ecosystem-learning/
 │   ├── README.md
 │   ├── spring-ioc-demo/
 │   ├── spring-mvc-demo/
-│   ├── spring-mysql-demo/
-│   ├── spring-security-demo/
-│   └── ... (21 个项目)
+│   ├── spring-autoconfig-demo/
+│   └── spring-transaction-demo/
 └── .vscode/               # IDE 配置
 ```

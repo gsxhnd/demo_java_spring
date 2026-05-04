@@ -5,7 +5,7 @@
 This is a **collection of independent Spring Boot example projects**, not a single application. There is no root `pom.xml` and no multi-module Maven build.
 
 ```
-examples/          # 21+ standalone Spring Boot projects, each with its own pom.xml
+examples/          # 4 standalone Spring Boot core projects, each with its own pom.xml
 devops/            # Docker Compose files for middleware (MySQL, Redis, MongoDB, etc.)
 docs/              # Chinese-primary documentation (dev guides, wiki, usage, reference)
 .agents/skills/    # AI agent skill definitions
@@ -59,7 +59,6 @@ docker compose -f devops/full-stack-compose.yml down
 - **Lombok** is used in all projects (mark as `optional: true` in pom.xml, exclude from `spring-boot-maven-plugin`)
 - **Constructor injection** with `private final` fields (no `@Autowired` on fields)
 - **GroupId:** `com.example`, **ArtifactId:** `spring-{topic}-demo`
-- **MyBatis-Plus table prefix:** `t_` (in spring-mysql-demo)
 - **JPA `open-in-view: false`** is explicitly set where JPA is used
 
 ## Current gaps
@@ -67,7 +66,6 @@ docker compose -f devops/full-stack-compose.yml down
 - No test source files exist in any project
 - No CI/CD pipeline
 - No code formatters or linters configured
-- `spring-microservice-demo` is a placeholder (empty)
 - Dockerfile references `./mvnw` but no wrapper is committed
 
 ## Middleware credentials (dev defaults)

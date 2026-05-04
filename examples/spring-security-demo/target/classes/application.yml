@@ -1,0 +1,37 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-security-demo
+
+  datasource:
+    url: jdbc:h2:mem:security_demo
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# JWT Configuration
+jwt:
+  secret: mySecretKeyForJWTTokenGenerationMustBeAtLeast256BitsLong123456789
+  access-token-expiration: 900000      # 15 minutes
+  refresh-token-expiration: 604800000   # 7 days
+
+logging:
+  level:
+    com.example.security: DEBUG
+    org.springframework.security: DEBUG

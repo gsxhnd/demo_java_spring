@@ -1,0 +1,18 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: spring-websocket-demo
+
+# WebSocket Configuration
+websocket:
+  allowed-origins: "*"
+  endpoint: /ws
+  topic-prefix: /topic
+  app-prefix: /app
+
+# Logging
+logging:
+  level:
+    com.example.websocket: DEBUG

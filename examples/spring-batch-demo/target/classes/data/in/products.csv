@@ -1,0 +1,11 @@
+id,name,category,price,stock
+1,MacBook Pro 14,Science,14999.00,50
+2,iPhone 15 Pro,Science,8999.00,200
+3,AirPods Pro 2,Science,1899.00,500
+4,Spring Boot 实战,Book,89.00,100
+5,Clean Code,Book,79.00,80
+6,ThinkPad X1 Carbon,Science,12999.00,30
+7,iPad Air,Science,4999.00,150
+8,Docker 容器实战,Book,69.00,200
+9,Kubernetes 指南,Book,99.00,120
+10,Apple Watch,Health,2999.00,80

@@ -6,7 +6,20 @@
 
 Spring Boot 通过自动配置（Auto-Configuration）根据 classpath 中的依赖、已有 Bean 和配置属性，自动注册合适的 Bean。Starter 则是一组预定义的依赖集合 + 自动配置，实现"引入依赖即可用"的开发体验。
 
-## 2. 核心概念 / Core Concepts
+## 2. 术语表 / Glossary
+
+> 以下术语是理解 Spring Boot 自动配置的前提。如果不熟悉"Bean"等基础概念，建议先阅读 [IoC 与依赖注入](01-ioc-di.md)。
+
+| 术语 | 定义 | 作用 | 为什么存在 |
+|------|------|------|-----------|
+| **Bean** | 由 Spring IoC 容器管理的 Java 对象实例。它不是普通的 `new` 出来的对象，而是容器创建、装配和管理的。 | 承载应用的业务逻辑、配置、数据访问等功能。每个 Bean 是一个可被注入和复用的组件。 | 将"对象创建"和"对象使用"分离。开发者只需声明依赖关系，容器负责装配和生命周期管理，实现了控制反转（IoC）。 |
+| **自动配置 (Auto-Configuration)** | Spring Boot 根据 classpath 中的 jar 包、已有 Bean、配置属性，自动推断并注册合适的 Bean 的机制。 | 消除手动编写 `@Configuration` 类的工作量——引入 `spring-boot-starter-web` 后无需手动配置 `DispatcherServlet`、`ViewResolver`、`HttpMessageConverter` 等。 | 解决"每个项目都要重复写配置"的问题。Spring Boot 的口号"约定优于配置"（Convention over Configuration）的核心实现。 |
+| **Starter** | 一组预定义的 Maven 依赖集合 + 配套的自动配置类。命名遵循 `spring-boot-starter-{name}`（官方）或 `{name}-spring-boot-starter`（第三方）。 | 一行依赖解决过去需要加 5-10 个依赖的问题。例如 `spring-boot-starter-web` 一次性引入 Spring MVC、内嵌 Tomcat、Jackson JSON 等。 | 避免"依赖地狱"（版本冲突、遗漏依赖）。Starter 统一管理依赖版本（由 Spring Boot 的 BOM 控制），确保兼容性。 |
+| **`@Conditional` 条件装配** | 在满足特定条件时才注册 Bean 的注解系列（`@ConditionalOnClass`、`@ConditionalOnMissingBean`、`@ConditionalOnProperty` 等）。 | 实现"有则启用，无则忽略"的智能注册。例如 classpath 中有 `DataSource` 时才自动配置数据源。 | 自动配置的核心机制——不同项目引入的依赖不同，条件装配确保只创建当前环境需要的 Bean，避免启动报错或无用 Bean 占用资源。 |
+| **`@ConfigurationProperties`** | 将 `application.yml` 中的配置属性自动绑定到 Java 对象的注解。支持类型安全的访问路径（如 `app.greeting.message`）。 | 替代 `@Value` 的批量、结构化配置方案。一个 POJO 字段对应一个 YAML 属性，IDE 可自动补全。 | 配置管理的"类型安全化"。避免散落各处的 `@Value` 字符串注入，将配置集中管理、可校验、可导航。 |
+| **Profile（多环境）** | 一组命名的配置环境（如 `dev`、`test`、`prod`），同一份代码在不同 Profile 下可注册不同的 Bean、加载不同的配置文件。 | 实现"开发环境连本地数据库，生产环境连集群"的切换，无需改代码。 | 12-Factor App 的"配置与代码分离"原则。环境差异通过 Profile 管理，而非 if-else 硬编码或注释切换。 |
+
+## 3. 核心概念 / Core Concepts
 
 ### 2.1 @SpringBootApplication 拆解
 
@@ -124,7 +137,7 @@ application.yml
 | Docker | `mvn spring-boot:build-image` | OCI 镜像 | 容器化部署 |
 | GraalVM Native | `mvn -Pnative native:compile` | 原生可执行文件 | 极致启动速度 |
 
-## 3. 快速集成 / Quick Start
+## 4. 快速集成 / Quick Start
 
 ### 3.1 Maven 依赖
 
@@ -144,7 +157,7 @@ application.yml
 | `spring.main.banner-mode` | `console` | Banner 显示模式 |
 | `debug=true` | `false` | 打印自动配置报告 |
 
-## 4. 设计决策与实现原理 / Design Decisions
+## 5. 设计决策与实现原理 / Design Decisions
 
 > 以下结合 [`examples/spring-autoconfig-demo/`](../../examples/spring-autoconfig-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
 
@@ -271,7 +284,7 @@ logging:
 
 启动时会输出**自动配置报告**（Positive/Negative matches），清晰展示每个自动配置类是否生效及其原因。这是排查"为什么某个 Bean 没有被自动注册"的最有效手段。
 
-## 5. 进阶要点 / Advanced Topics
+## 6. 进阶要点 / Advanced Topics
 
 - **自动配置排除** — `@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})` 或 `spring.autoconfigure.exclude` 配置
 - **自动配置报告** — 启动时加 `--debug` 或设置 `debug=true`，查看 Positive/Negative matches
@@ -283,7 +296,7 @@ logging:
 - **虚拟线程** — Spring Boot 4.0 默认在 Java 21+ 环境下启用虚拟线程，Tomcat 自动使用虚拟线程执行器
 - **Jackson 3 支持** — Spring Boot 4.0 引入 Jackson 3（`tools.jackson`），注意包名变化
 
-## 6. 常见问题 / FAQ
+## 7. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -294,20 +307,20 @@ logging:
 | JAR 包太大 | 包含所有依赖 | 使用 Layered JAR + Docker 多阶段构建 |
 | 多模块项目扫描不到 Bean | 主类不在根包 | 调整包结构或显式 `@ComponentScan` |
 
-## 7. 示例项目 / Example
+## 8. 示例项目 / Example
 
 > 示例项目位于 [`examples/spring-autoconfig-demo/`](../../examples/spring-autoconfig-demo/)
 >
 > 已演示：`@ConfigurationProperties` 类型安全绑定、嵌套配置类、`@Validated` 配置校验、`@ConditionalOnClass` / `@ConditionalOnMissingBean` / `@ConditionalOnProperty` 条件装配、`@ConfigurationPropertiesScan` 全局扫描、`ApplicationReadyEvent` 启动事件、多环境 Profile 切换（dev / test / prod）、`@Value` vs `@ConfigurationProperties` 对比
 
-## 8. 参考链接 / References
+## 9. 参考链接 / References
 
 - [Spring Boot Reference — Auto-configuration](https://docs.spring.io/spring-boot/reference/using/auto-configuration.html)
 - [Spring Boot Reference — Configuration Properties](https://docs.spring.io/spring-boot/reference/features/external-config.html)
 - [Spring Boot Reference — Creating Your Own Starter](https://docs.spring.io/spring-boot/reference/features/developing-auto-configuration.html)
 - [Baeldung — Create a Custom Starter](https://www.baeldung.com/spring-boot-custom-starter)
 
-## 9. 下一步
+## 10. 下一步
 
 理解了自动配置原理之后，核心基础篇的最后一站是事务管理 — 掌握 `@Transactional` 的传播行为、隔离级别，以及生产环境中最常见的事务失效场景。
 

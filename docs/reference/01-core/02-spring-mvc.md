@@ -6,7 +6,25 @@
 
 Spring MVC 基于 Servlet 规范，采用前端控制器模式（Front Controller Pattern）。所有请求经过 `DispatcherServlet` 统一分发，由 Handler（Controller）处理后返回响应。Spring Boot 内嵌 Tomcat，开箱即用。
 
-## 2. 核心概念 / Core Concepts
+## 2. 术语表 / Glossary
+
+> 以下术语是 Spring MVC 的核心概念。如果不熟悉 IoC / Bean 等基础概念，建议先阅读 [IoC 与依赖注入](01-ioc-di.md)。
+
+| 术语 | 定义 | 作用 | 为什么存在 |
+|------|------|------|-----------|
+| **DispatcherServlet** | Spring MVC 的前端控制器（Front Controller），所有 HTTP 请求的入口。它自己不处理业务，而是把请求分发给对应的 Controller。 | 统一接收请求、协调 HandlerMapping / HandlerAdapter / ViewResolver 三大组件完成请求处理。 | 遵循前端控制器设计模式——将通用的横切逻辑（编码、权限、日志）集中在入口处，避免每个 Servlet 重复实现。 |
+| **Controller（处理器）** | 实际处理 HTTP 请求的组件，标注 `@RestController` 或 `@Controller`。方法上通过 `@GetMapping`、`@PostMapping` 等注解映射 URL。 | 接收请求参数 → 调用 Service 层 → 返回响应。是 HTTP 协议和业务逻辑之间的适配层。 | 将"HTTP 请求分发"和"业务处理"解耦。DispatcherServlet 只管"谁处理"，Controller 只管"怎么处理"。 |
+| **`@RestController`** | `@Controller` + `@ResponseBody` 的组合注解。方法的返回值直接序列化为 JSON/XML 写入响应体，不走视图渲染。 | 构建 RESTful API 的标准注解。 | REST API 不需要返回 HTML 页面，只需返回数据。`@RestController` 省去了每个方法都加 `@ResponseBody` 的繁琐。 |
+| **HttpMessageConverter** | 负责 HTTP 请求体 ↔ Java 对象的双向转换。默认使用 Jackson 做 JSON 序列化/反序列化。 | 将 `@RequestBody` 标记的参数从 JSON 转为 Java 对象，将 Controller 返回的对象转为 JSON 响应体。 | HTTP 传输的是字节流，Java 操作的是对象。`HttpMessageConverter` 做透明的双向转换，开发者无需手动处理序列化。 |
+| **HandlerInterceptor（拦截器）** | 在 Controller 方法执行前后插入逻辑的组件。通过 `preHandle` / `postHandle` / `afterCompletion` 三个回调实现。 | 实现登录检查、权限验证、请求日志、性能计时等横切逻辑。 | 和 Filter 不同，拦截器能拿到 Handler 对象（知道是哪个 Controller 方法），能对特定 URL 模式精确控制。 |
+| **Filter（过滤器）** | Servlet 规范层面的组件，在请求到达 DispatcherServlet **之前**执行。 | 处理字符编码、CORS、请求压缩等 Servlet 层面的通用逻辑。 | 拦截器和 Filter 各有领地：Filter 负责底层协议工作，Interceptor 负责业务相关的请求处理。 |
+| **`@RestControllerAdvice`** | 全局的 AOP 增强切面，作用于所有 `@RestController`。 | 配合 `@ExceptionHandler` 统一处理所有 Controller 抛出的异常；配合 `ResponseBodyAdvice` 统一包装响应体。 | 将异常处理和响应格式从 Controller 中剥离。Controller 只需抛出异常或返回业务数据，格式化和错误映射由 Advice 层集中处理。 |
+| **`@ResponseBodyAdvice`** | 在响应体序列化之前插入逻辑的接口。 | 在 Controller 返回值和 JSON 序列化之间做一次"拦截"，比如统一包装成 `{"code":0,"data":...}` 格式。 | 避免每个 Controller 手动调用包装方法。一次实现，全局生效——跨切关注点的典型应用。 |
+| **ResponseEntity** | Spring 对 HTTP 响应的完整封装，包含状态码、响应头、响应体。 | 当需要精确控制 HTTP 响应时使用（如文件下载需要设置 `Content-Disposition` 头）。 | `@RestController` 适合 JSON 响应，`ResponseEntity` 适合需要自定义 HTTP 协议细节的场景（文件下载、流式响应）。 |
+| **`@Valid` / Bean Validation** | 对方法参数进行声明式校验的注解，基于 JSR 380（Jakarta Bean Validation）规范。 | 在 Controller 参数上标注 `@Valid`，Spring 自动校验 `@NotBlank`、`@Email` 等约束，失败时抛出 `MethodArgumentNotValidException`。 | 将校验逻辑从业务代码中解耦——不是在 Service 层写 if-else 判断，而是在 DTO 上用注解声明规则，既清晰又可复用。 |
+| **DTO（Data Transfer Object）** | 专门用于数据传输的纯数据对象，不包含业务逻辑。通常与 API 的 Request/Response 一一对应。 | 隔离外部协议和内部模型——请求体用 `UserRequest`（含校验注解），内部业务代码用 `User`（含业务字段）。 | 前端传什么格式和数据库存什么结构是两件事。DTO 作为中间层，防止 API 协议变化直接冲击内部模型。 |
+
+## 3. 核心概念 / Core Concepts
 
 ### 2.1 请求处理流程
 
@@ -120,7 +138,7 @@ Filter → DispatcherServlet → preHandle → Controller → postHandle → aft
 | `spring.servlet.multipart.max-request-size` | `10MB` | 请求总大小限制 |
 | `spring.servlet.multipart.file-size-threshold` | `0B` | 超过此值写入临时文件 |
 
-## 3. 快速集成 / Quick Start
+## 4. 快速集成 / Quick Start
 
 ### 3.1 Maven 依赖
 
@@ -140,7 +158,7 @@ Filter → DispatcherServlet → preHandle → Controller → postHandle → aft
 | `spring.jackson.default-property-inclusion` | — | JSON null 值处理 |
 | `spring.mvc.throw-exception-if-no-handler-found` | `true` | 404 抛异常 |
 
-## 4. 设计决策与实现原理 / Design Decisions
+## 5. 设计决策与实现原理 / Design Decisions
 
 > 以下结合 [`examples/spring-mvc-demo/`](../../examples/spring-mvc-demo/) 的实际代码，解释每个设计选择背后的"为什么"。
 
@@ -256,7 +274,7 @@ registry.addMapping("/api/**")
 
 `allowedOrigins("*")` 与 `allowCredentials(true)` 互斥（CORS 规范禁止通配来源 + 凭据）。`allowedOriginPatterns` 支持通配符模式匹配，是 `allowCredentials(true)` 场景下实现跨域的正确方式。Demo 中设置 `allowCredentials(true)` 是为了演示完整配置，生产环境应限制具体的 origin 列表。
 
-## 5. 进阶要点 / Advanced Topics
+## 6. 进阶要点 / Advanced Topics
 
 - **`ResponseBodyAdvice`** — 统一包装响应体，避免每个 Controller 手动包装
 - **`RequestBodyAdvice`** — 请求体预处理，如解密、日志记录
@@ -268,7 +286,7 @@ registry.addMapping("/api/**")
 - **接口版本管理** — URL 路径版本 (`/api/v1/`) vs Header 版本 vs 自定义注解
 - **`ProblemDetail`（RFC 7807）** — Spring Boot 4.x 标准错误响应格式，统一异常返回结构
 
-## 6. 常见问题 / FAQ
+## 7. 常见问题 / FAQ
 
 | 问题 | 原因 | 解决方案 |
 |------|------|---------|
@@ -280,20 +298,20 @@ registry.addMapping("/api/**")
 | 文件上传超限 | 默认 1MB | 调整 `spring.servlet.multipart.max-file-size` |
 | 拦截器不生效 | 未注册到 `WebMvcConfigurer` | 实现 `addInterceptors` 方法注册 |
 
-## 7. 示例项目 / Example
+## 8. 示例项目 / Example
 
 > 示例项目位于 [`examples/spring-mvc-demo/`](../../examples/spring-mvc-demo/)
 >
 > 已演示：RESTful CRUD、参数校验（`@Valid` + Jakarta Validation）、统一异常处理（`@RestControllerAdvice`）、统一响应包装（`ResponseBodyAdvice`）、拦截器（`HandlerInterceptor` 日志与计时）、CORS 全局配置、文件上传下载（`MultipartFile` / `ResponseEntity<byte[]>`）、虚拟线程
 
-## 8. 参考链接 / References
+## 9. 参考链接 / References
 
 - [Spring Framework Reference — Web MVC](https://docs.spring.io/spring-framework/reference/web/webmvc.html)
 - [Spring Boot Reference — Web](https://docs.spring.io/spring-boot/reference/web/servlet.html)
 - [Baeldung — Spring MVC Tutorial](https://www.baeldung.com/spring-mvc-tutorial)
 - [Baeldung — Spring Validation](https://www.baeldung.com/spring-boot-bean-validation)
 
-## 9. 下一步
+## 10. 下一步
 
 掌握了 MVC 开发之后，下一步了解 Spring Boot 的自动配置机制 — 理解 `@SpringBootApplication` 背后的魔法，学会通过 Profile 管理多环境配置，以及如何自定义 Starter。
 

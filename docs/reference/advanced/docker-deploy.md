@@ -327,35 +327,7 @@ docker run -p 8080:8080 -p 5005:5005 \
 
 ---
 
-## 6. 示例项目 / Example
-
-完整可运行代码见 → [`examples/spring-docker-demo/`](../../examples/spring-docker-demo/)
-
-**演示功能：**
-- 多阶段 Dockerfile 构建
-- 分层 JAR 优化构建
-- JVM 容器感知配置
-- Docker Compose 编排
-- 健康检查配置
-- 非 root 用户运行
-
-**运行示例：**
-```bash
-cd examples/spring-docker-demo
-
-# 构建镜像
-docker build -t spring-docker-demo:latest .
-
-# 运行容器
-docker run -d -p 8080:8080 spring-docker-demo:latest
-
-# 或使用 Docker Compose
-docker compose up -d
-```
-
----
-
-## 7. 参考资料 / References
+## 6. 参考资料 / References
 
 - [Spring Boot Docker Guide](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html)
 - [Eclipse Temurin Docker Images](https://hub.docker.com/_/eclipse-temurin)

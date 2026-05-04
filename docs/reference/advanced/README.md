@@ -28,7 +28,6 @@
 | [`examples/spring-batch-demo/`](../examples/spring-batch-demo/) ✅ | CSV 导入、Chunk 处理、Skip/Retry 容错 |
 | [`examples/spring-webflux-demo/`](../examples/spring-webflux-demo/) ✅ | WebFlux + R2DBC、Mono/Flux、SSE |
 | [`examples/spring-modulith-demo/`](../examples/spring-modulith-demo/) ✅ | 模块化结构、事件驱动、Event Publication Log |
-| [`examples/spring-docker-demo/`](../examples/spring-docker-demo/) ✅ | 多阶段构建、Docker Compose、健康检查 |
 
 ## 学习建议 / Recommendations
 

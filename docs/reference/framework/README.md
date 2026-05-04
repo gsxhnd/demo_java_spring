@@ -64,5 +64,4 @@
 - 任务调度示例 → [`examples/spring-scheduling-demo/`](../../examples/spring-scheduling-demo/) ✅
 - 异步处理示例 → [`examples/spring-async-demo/`](../../examples/spring-async-demo/) ✅
 - 文件上传下载示例 → [`examples/spring-file-demo/`](../../examples/spring-file-demo/) ✅
-- Docker 部署示例 → [`examples/spring-docker-demo/`](../../examples/spring-docker-demo/) ✅
 - 其他能力集成在各数据库/微服务示例项目中

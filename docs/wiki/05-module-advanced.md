@@ -22,7 +22,6 @@
 | Spring Batch | spring-batch-demo | Job, Step, ItemReader, ItemWriter |
 | Spring WebFlux | spring-webflux-demo | Reactor, Mono/Flux, R2DBC |
 | Spring Modulith | spring-modulith-demo | ApplicationModule, Event Publication |
-| Docker 部署 | spring-docker-demo | Dockerfile, 多阶段构建, JVM 调优 |
 
 ## 模块结构
 
@@ -39,8 +38,7 @@ examples/
 ├── spring-websocket-demo/
 ├── spring-batch-demo/
 ├── spring-webflux-demo/
-├── spring-modulith-demo/
-└── spring-docker-demo/
+└── spring-modulith-demo/
 ```
 
 ## 与其他模块的关系

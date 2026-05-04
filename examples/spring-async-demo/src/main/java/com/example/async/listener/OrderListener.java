@@ -3,6 +3,7 @@ package com.example.async.listener;
 import com.example.async.event.OrderCreatedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,7 +26,7 @@ public class OrderListener {
     /**
      * 异步处理订单创建事件 - 发送通知
      */
-    @org.springframework.scheduling.annotation.Async("asyncExecutor")
+    @Async("asyncExecutor")
     @EventListener
     public void handleOrderCreatedForNotification(OrderCreatedEvent event) {
         log.info("[OrderListener-Notification] 处理订单创建: orderId={}, 发送通知",

@@ -122,7 +122,6 @@ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=spring-mysql-dem
 docker run -p 8080:8080 --network host spring-mysql-demo
 ```
 
-或参考 `examples/spring-docker-demo/` 查看完整的 Dockerfile 和 docker-compose 示例。
 
 ## 下一步
 

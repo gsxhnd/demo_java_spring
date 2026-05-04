@@ -70,8 +70,7 @@ examples/
 ├── spring-websocket-demo/       # 进阶
 ├── spring-batch-demo/
 ├── spring-webflux-demo/
-├── spring-modulith-demo/
-└── spring-docker-demo/
+└── spring-modulith-demo/
 ```
 
 ## 与其他模块的关系

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -56,17 +55,16 @@ public class BusinessService {
      */
     public CompletableFuture<String> processWithTraceId(Long id) {
         String traceId = MDC.get("traceId");
-        if (traceId == null) {
-            traceId = UUID.randomUUID().toString().substring(0, 8);
-        }
+        final String finalTraceId = traceId != null ? traceId :
+                UUID.randomUUID().toString().substring(0, 8);
 
         return CompletableFuture.supplyAsync(() -> {
             // 在异步线程中设置 MDC
-            MDC.put("traceId", traceId);
+            MDC.put("traceId", finalTraceId);
             try {
-                log.info("[Process] 开始处理: id={}, traceId={}", id, traceId);
+                log.info("[Process] 开始处理: id={}, traceId={}", id, finalTraceId);
                 simulateDelay(500);
-                log.info("[Process] 处理完成: id={}, traceId={}", id, traceId);
+                log.info("[Process] 处理完成: id={}, traceId={}", id, finalTraceId);
                 return "Processed-" + id;
             } finally {
                 MDC.remove("traceId");

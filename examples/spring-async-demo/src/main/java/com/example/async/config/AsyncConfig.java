@@ -3,6 +3,7 @@ package com.example.async.config;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
@@ -18,10 +19,32 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class AsyncConfig implements AsyncConfigurer {
 
     /**
+     * MDC 上下文传递装饰器
+     *
+     * 确保 MDC（如 traceId）在异步线程中也能使用
+     */
+    @Bean(name = "mdcTaskDecorator")
+    public TaskDecorator mdcTaskDecorator() {
+        return runnable -> {
+            var contextMap = MDC.getCopyOfContextMap();
+            return () -> {
+                try {
+                    if (contextMap != null) {
+                        MDC.setContextMap(contextMap);
+                    }
+                    runnable.run();
+                } finally {
+                    MDC.clear();
+                }
+            };
+        };
+    }
+
+    /**
      * 默认异步任务执行器
      */
     @Bean(name = "asyncExecutor")
-    public Executor asyncExecutor() {
+    public Executor asyncExecutor(TaskDecorator mdcTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(8);
         executor.setMaxPoolSize(16);
@@ -38,6 +61,9 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setWaitForTasksToCompleteOnShutdown(true);
         executor.setAwaitTerminationSeconds(30);
 
+        // 应用 MDC 装饰器
+        executor.setTaskDecorator(mdcTaskDecorator);
+
         executor.initialize();
         return executor;
     }
@@ -46,13 +72,14 @@ public class AsyncConfig implements AsyncConfigurer {
      * IO 密集型任务执行器（更大的线程池）
      */
     @Bean(name = "ioExecutor")
-    public Executor ioExecutor() {
+    public Executor ioExecutor(TaskDecorator mdcTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(16);
         executor.setMaxPoolSize(32);
         executor.setQueueCapacity(200);
         executor.setKeepAliveSeconds(60);
         executor.setThreadNamePrefix("io-exec-");
+        executor.setTaskDecorator(mdcTaskDecorator);
         executor.initialize();
         return executor;
     }
@@ -61,44 +88,20 @@ public class AsyncConfig implements AsyncConfigurer {
      * CPU 密集型任务执行器（较小的线程池）
      */
     @Bean(name = "cpuExecutor")
-    public Executor cpuExecutor() {
+    public Executor cpuExecutor(TaskDecorator mdcTaskDecorator) {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // CPU 密集型：核心线程数 = CPU 核心数 + 1
         executor.setCorePoolSize(Runtime.getRuntime().availableProcessors() + 1);
         executor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() + 1);
         executor.setQueueCapacity(50);
         executor.setThreadNamePrefix("cpu-exec-");
+        executor.setTaskDecorator(mdcTaskDecorator);
         executor.initialize();
         return executor;
     }
 
-    /**
-     * MDC 上下文传递装饰器
-     *
-     * 确保 MDC（如 traceId）在异步线程中也能使用
-     */
-    @Bean(name = "mdcTaskDecorator")
-    public org.springframework.core.task.TaskDecorator mdcTaskDecorator() {
-        return runnable -> {
-            // 获取当前线程的 MDC 上下文
-            var contextMap = MDC.getCopyOfContextMap();
-
-            return () -> {
-                try {
-                    // 设置子线程的 MDC 上下文
-                    if (contextMap != null) {
-                        MDC.setContextMap(contextMap);
-                    }
-                    runnable.run();
-                } finally {
-                    MDC.clear();
-                }
-            };
-        };
-    }
-
     @Override
     public Executor getAsyncExecutor() {
-        return asyncExecutor();
+        return asyncExecutor(mdcTaskDecorator());
     }
 }

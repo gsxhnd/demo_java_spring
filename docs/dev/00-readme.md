@@ -27,6 +27,9 @@
 - 开发顺序以 `05-roadmap.md` 为准
 - 未决问题统一记录在 `06-open-questions.md`
 - 文档默认为 draft，代码落地后再更新为已验证描述
+- 技术参考文档统一存放在 [reference/](../reference/00-readme.md) 目录下
+- 模块设计决策文档存放在 [wiki/](../wiki/00-readme.md) 目录下
+- 用户使用指南存放在 [usage/](../usage/00-readme.md) 目录下
 
 ## 设计原则
 

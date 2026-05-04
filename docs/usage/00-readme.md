@@ -21,6 +21,7 @@
 | 深入使用 | → [进阶使用](./05-advanced-usage.md) |
 | 遇到问题 | → [故障排查](./08-troubleshooting.md) |
 | 有疑问 | → [常见问题](./09-faq.md) |
+| 查阅技术细节 | → [技术参考文档](../reference/00-readme.md) |
 
 ## 文档索引
 
@@ -35,3 +36,4 @@
 | `09-faq.md` | 常见问题解答 |
 
 > 注：本项目是学习资料库，不提供 CLI 工具或 API 服务，因此没有 CLI 参考和 API 参考文档。
+> 各主题的详细技术参考文档位于 [reference/](../reference/00-readme.md) 目录下。

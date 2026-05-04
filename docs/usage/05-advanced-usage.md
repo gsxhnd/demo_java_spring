@@ -128,3 +128,4 @@ docker run -p 8080:8080 --network host spring-mysql-demo
 
 - 遇到问题 → [故障排查](./08-troubleshooting.md)
 - 有疑问 → [常见问题](./09-faq.md)
+- 查阅技术细节 → [技术参考文档](../reference/00-readme.md)

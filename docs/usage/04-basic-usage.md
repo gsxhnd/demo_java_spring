@@ -95,11 +95,23 @@ cd examples/spring-batch-demo && mvn spring-boot:run
 cd examples/spring-webflux-demo && mvn spring-boot:run
 ```
 
+## 推荐学习顺序
+
+1. **核心基础**：IoC & DI → Spring MVC → 自动配置与 Starter → 事务管理
+2. **入门框架**：Actuator → Logging → AOP → Testing
+3. **数据层**：MySQL (JPA) → MySQL (MyBatis) → Redis → MongoDB
+4. **安全**：Spring Security + JWT
+5. **框架进阶**：JPA 深入 → 缓存体系 → 任务调度 → 异步处理 → 数据校验 → 文件上传/下载
+6. **微服务**：Gateway → Service Discovery → Config Center → OpenFeign → Circuit Breaker → MQ → OpenTelemetry → Seata
+7. **进阶数据库**：Elasticsearch → ClickHouse → InfluxDB
+8. **进阶主题**：WebSocket/SSE → Spring Batch → WebFlux → Spring Modulith → Docker 部署
+
 ## 文档查阅技巧
 
 - 每个主题的索引页面（`README.md`）汇总了该主题的所有子文档
 - 文档支持中英对照，技术术语保持英文
 - 每个文档包含：核心概念 + 配置示例 + 代码片段 + 注意事项
+- 详细技术参考文档位于 [reference/](../reference/00-readme.md) 目录下
 
 ## 下一步
 

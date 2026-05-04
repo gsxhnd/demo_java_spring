@@ -44,7 +44,7 @@ spring-microservice-demo/
 ## 模块结构
 
 ```text
-docs/microservice/
+docs/reference/microservice/
 ├── README.md                  # 微服务篇索引
 ├── gateway.md                 # API 网关
 ├── service-discovery.md       # 服务注册与发现
@@ -77,6 +77,21 @@ docs/microservice/
   ├── 数据库 (database)       → 各服务独立数据存储
   └── 框架核心 (framework)    → 安全认证、健康检查、日志
 ```
+
+## 详细技术参考
+
+以下为各子主题的完整技术参考文档，包含核心概念、配置示例、代码片段、进阶要点和常见问题：
+
+| 子主题 | 参考文档 |
+|--------|----------|
+| API 网关 | [reference/microservice/gateway.md](../reference/microservice/gateway.md) |
+| 服务注册与发现 | [reference/microservice/service-discovery.md](../reference/microservice/service-discovery.md) |
+| 配置中心 | [reference/microservice/config-center.md](../reference/microservice/config-center.md) |
+| 服务间通信 | [reference/microservice/service-communication.md](../reference/microservice/service-communication.md) |
+| 熔断降级 | [reference/microservice/circuit-breaker.md](../reference/microservice/circuit-breaker.md) |
+| 分布式事务 | [reference/microservice/distributed-transaction.md](../reference/microservice/distributed-transaction.md) |
+| 消息队列 | [reference/microservice/message-queue.md](../reference/microservice/message-queue.md) |
+| 可观测性 | [reference/microservice/observability.md](../reference/microservice/observability.md) |
 
 ## 注意事项
 

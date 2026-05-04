@@ -30,7 +30,7 @@
 ## 模块结构
 
 ```text
-docs/database/
+docs/reference/database/
 ├── README.md           # 数据库篇索引（含环境启动指引）
 ├── mysql.md            # MySQL + JPA + MyBatis
 ├── postgresql.md       # PostgreSQL + JSONB + 全文搜索
@@ -59,6 +59,20 @@ examples/
 ### 被依赖
 
 - **微服务模块**：微服务各自独立的数据存储
+
+## 详细技术参考
+
+以下为各数据库的完整技术参考文档，包含核心概念、配置示例、代码片段、进阶要点和常见问题：
+
+| 数据库 | 参考文档 |
+|--------|----------|
+| MySQL | [reference/database/mysql.md](../reference/database/mysql.md) |
+| PostgreSQL | [reference/database/postgresql.md](../reference/database/postgresql.md) |
+| Redis | [reference/database/redis.md](../reference/database/redis.md) |
+| MongoDB | [reference/database/mongodb.md](../reference/database/mongodb.md) |
+| Elasticsearch | [reference/database/elasticsearch.md](../reference/database/elasticsearch.md) |
+| ClickHouse | [reference/database/clickhouse.md](../reference/database/clickhouse.md) |
+| InfluxDB | [reference/database/influxdb.md](../reference/database/influxdb.md) |
 
 ## 注意事项
 

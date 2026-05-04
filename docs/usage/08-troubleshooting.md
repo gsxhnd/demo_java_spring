@@ -142,7 +142,7 @@ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_
 如果以上方法无法解决你的问题：
 
 1. 查看 [常见问题](./09-faq.md)
-2. 检查 [项目文档中心](../README.md) 中的对应模块文档
+2. 查看 [技术参考文档](../reference/00-readme.md) 中的对应模块文档
 3. 提交 Issue，请附带以下信息：
    - 操作系统和版本（`uname -a`）
    - Java 版本（`java -version`）

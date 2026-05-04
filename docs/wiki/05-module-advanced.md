@@ -27,7 +27,7 @@
 ## 模块结构
 
 ```text
-docs/advanced/
+docs/reference/advanced/
 ├── README.md           # 进阶主题索引
 ├── websocket.md         # WebSocket / SSE 实时通信
 ├── batch.md             # Spring Batch 批处理
@@ -64,6 +64,18 @@ examples/
   ├── 数据库 (database)     → 存储 Job 元数据、R2DBC
   └── 微服务 (microservice) → 容器化部署目标
 ```
+
+## 详细技术参考
+
+以下为各子主题的完整技术参考文档，包含核心概念、配置示例、代码片段、进阶要点和常见问题：
+
+| 子主题 | 参考文档 |
+|--------|----------|
+| WebSocket / SSE 实时通信 | [reference/advanced/websocket.md](../reference/advanced/websocket.md) |
+| Spring Batch 批处理 | [reference/advanced/batch.md](../reference/advanced/batch.md) |
+| Spring WebFlux 响应式 | [reference/advanced/webflux.md](../reference/advanced/webflux.md) |
+| Spring Modulith 模块化单体 | [reference/advanced/modulith.md](../reference/advanced/modulith.md) |
+| Docker 容器化部署 | [reference/advanced/docker-deploy.md](../reference/advanced/docker-deploy.md) |
 
 ## 注意事项
 

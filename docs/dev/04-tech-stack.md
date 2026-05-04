@@ -7,6 +7,17 @@
 - **构建工具**：Maven 3.9+
 - **包管理器**：Maven Central
 
+## 版本矩阵
+
+| Component | Version | Notes |
+|-----------|---------|-------|
+| Java | 21 (LTS) | Spring Cloud Alibaba 2025.1 要求 Java 21+ |
+| Spring Boot | 4.0.5 | 基于 Spring Framework 7.0.6 |
+| Spring Framework | 7.0.6 | |
+| Spring Cloud | 2025.1 (Oakwood) | 对应 Spring Boot 4.0.x |
+| Spring Cloud Alibaba | 2025.1.0.0 | Nacos 3.0 / Sentinel 2.0 / Seata 2.0 |
+| Maven | 3.9+ | 构建工具 |
+
 ## 核心依赖
 
 | 依赖 | 版本 | 用途 |
@@ -94,17 +105,16 @@ docker compose -f full-stack-compose.yml down
 spring-ecosystem-learning/
 ├── README.md              # 项目主文档
 ├── LICENSE                # MIT
-├── docs/                  # 学习文档（按主题组织）
-│   ├── README.md          # 文档中心导航
-│   ├── getting-started.md # 快速开始
-│   ├── core/              # 核心基础篇
-│   ├── database/          # 数据库篇
-│   ├── framework/         # 框架核心篇
-│   ├── microservice/      # 微服务篇
-│   ├── advanced/          # 进阶主题篇
+├── docs/              # 文档中心（统一文档体系）
 │   ├── dev/               # 开发文档（本目录）
-│   ├── wiki/              # 代码描述
-│   └── usage/             # 使用指南
+│   ├── wiki/              # 代码描述与设计决策
+│   ├── usage/             # 使用指南
+│   └── reference/         # 技术参考文档
+│       ├── core/          # 核心基础篇
+│       ├── database/      # 数据库篇
+│       ├── framework/     # 框架核心篇
+│       ├── microservice/  # 微服务篇
+│       └── advanced/      # 进阶主题篇
 ├── examples/              # 示例项目
 │   ├── README.md
 │   ├── docker-compose/    # 中间件编排

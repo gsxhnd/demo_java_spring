@@ -4,7 +4,6 @@ import com.example.autoconfig.dto.ApiResponse;
 import com.example.autoconfig.properties.AppProperties;
 import com.example.autoconfig.service.FeatureService;
 import com.example.autoconfig.service.GreetingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
@@ -30,11 +29,10 @@ public class AutoconfigController {
     @Value("${server.port:8080}")
     private int serverPort;
 
-    @Autowired
     public AutoconfigController(GreetingService greetingService,
-                               FeatureService featureService,
-                               AppProperties appProperties,
-                               Environment environment) {
+                                FeatureService featureService,
+                                AppProperties appProperties,
+                                Environment environment) {
         this.greetingService = greetingService;
         this.featureService = featureService;
         this.appProperties = appProperties;
@@ -94,9 +92,7 @@ public class AutoconfigController {
      */
     @PostMapping("/cache/clear")
     public ApiResponse<Void> clearCache() {
-        if (greetingService instanceof GreetingService) {
-            greetingService.clearCache();
-        }
+        greetingService.clearCache();
         return ApiResponse.success("缓存已清除", null);
     }
 }

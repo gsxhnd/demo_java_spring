@@ -1,17 +1,13 @@
 package com.example.autoconfig.service;
 
-import com.example.autoconfig.properties.AppProperties;
-import org.springframework.stereotype.Service;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 问候服务
  *
- * 演示通过 @ConfigurationProperties 注入配置
+ * 由 CustomAutoConfiguration 负责创建 Bean，不通过组件扫描
  */
-@Service
 public class GreetingService {
 
     private final String message;

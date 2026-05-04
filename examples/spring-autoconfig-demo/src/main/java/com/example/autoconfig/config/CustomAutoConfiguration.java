@@ -41,12 +41,12 @@ public class CustomAutoConfiguration {
     }
 
     /**
-     * 条件：当容器中不存在指定 Bean 时才注册
+     * 条件：当容器中不存在该类型 Bean 时才注册
      *
      * 典型场景：用户自定义 Bean 优先，自动配置兜底
      */
     @Bean
-    @ConditionalOnMissingBean(name = "customGreetingService")
+    @ConditionalOnMissingBean(GreetingService.class)
     public GreetingService defaultGreetingService(AppProperties properties) {
         System.out.println("[AutoConfiguration] 注册默认 GreetingService");
         return new GreetingService(properties.getGreeting().getMessage());

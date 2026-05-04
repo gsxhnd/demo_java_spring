@@ -17,13 +17,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class SpringAutoconfigDemoApplication {
 
     public static void main(String[] args) {
-        var context = SpringApplication.run(SpringAutoconfigDemoApplication.class, args);
-
-        // 打印激活的 Profile
-        System.out.println("\n========== 自动配置演示 ==========");
-        System.out.println("激活的 Profile: " + String.join(", ",
-                context.getEnvironment().getActiveProfiles()));
-
-        context.close();
+        SpringApplication.run(SpringAutoconfigDemoApplication.class, args);
     }
 }

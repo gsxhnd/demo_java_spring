@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: spring-boot-observability-demo
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# 自定义应用配置
+app:
+  name: Spring Boot 可观测性演示应用
+  version: 1.0.0
+  description: Spring Boot 可观测性演示 - Actuator、OpenTelemetry、Micrometer、结构化日志
+  server:
+    host: localhost
+    port: 8080
+    contextPath: /app
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info,env,loggers
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+
+# OpenTelemetry 配置
+otel:
+  sdk:
+    disabled: false
+  traces:
+    exporter: logging
+  metrics:
+    exporter: logging
+  logs:
+    exporter: logging
+
+# 日志配置 - 结构化 JSON 输出
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+  structured:
+    format:
+      console: ecs
+
+# OpenAPI 兼容说明（可选）
+springdoc:
+  swagger-ui:
+    enabled: false

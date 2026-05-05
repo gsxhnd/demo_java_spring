@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: spring-boot-demo
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# 自定义应用配置
+app:
+  name: Spring Boot 演示应用
+  version: 1.0.0
+  description: Spring Boot 基础项目 - 展示自动配置、Starter 机制、配置管理
+  server:
+    host: localhost
+    port: 8080
+    contextPath: /app
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

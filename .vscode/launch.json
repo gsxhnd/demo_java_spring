@@ -1,35 +1,67 @@
 {
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Spring Boot-SpringIocDemoApplication<spring-ioc-demo>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.ioc.SpringIocDemoApplication",
-            "projectName": "spring-ioc-demo",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=40795 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=spring-ioc-demo"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SpringMvcDemoApplication<spring-mvc-demo>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.mvc.SpringMvcDemoApplication",
-            "projectName": "spring-mvc-demo",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        },
-        {
-            "type": "java",
-            "name": "Spring Boot-SpringAutoconfigDemoApplication<spring-autoconfig-demo>",
-            "request": "launch",
-            "cwd": "${workspaceFolder}",
-            "mainClass": "com.example.autoconfig.SpringAutoconfigDemoApplication",
-            "projectName": "spring-autoconfig-demo",
-            "args": "",
-            "envFile": "${workspaceFolder}/.env"
-        }
-    ]
+  "configurations": [
+    {
+      "type": "java",
+      "name": "SpringBootDemoApplication",
+      "request": "launch",
+      "mainClass": "main.java.com.example.boot.SpringBootDemoApplication"
+    },
+    {
+      "type": "java",
+      "name": "SpringCoreDemoApplication",
+      "request": "launch",
+      "mainClass": "main.java.com.example.core.SpringCoreDemoApplication"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringIocDemoApplication<spring-ioc-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.ioc.SpringIocDemoApplication",
+      "projectName": "spring-ioc-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=40795 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=spring-ioc-demo"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringMvcDemoApplication<spring-mvc-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.mvc.SpringMvcDemoApplication",
+      "projectName": "spring-mvc-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringAutoconfigDemoApplication<spring-autoconfig-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.autoconfig.SpringAutoconfigDemoApplication",
+      "projectName": "spring-autoconfig-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringCoreDemoApplication<02-spring-core-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.core.SpringCoreDemoApplication",
+      "projectName": "02-spring-core-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringBootDemoApplication<03-spring-boot-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.boot.SpringBootDemoApplication",
+      "projectName": "03-spring-boot-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
 }

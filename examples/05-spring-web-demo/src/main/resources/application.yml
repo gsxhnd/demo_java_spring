@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: spring-web-demo
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+# Swagger/OpenAPI 配置
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

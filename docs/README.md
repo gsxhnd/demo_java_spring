@@ -39,16 +39,6 @@ mvn spring-boot:run
 
 ## 学习路线
 
-```
-核心基础篇 → 数据库篇 → 框架核心篇 → 微服务篇 → 进阶主题篇
-```
-
-1. **核心基础**：[IoC & DI](./reference/01-core/01-ioc-di.md) → [Spring MVC](./reference/01-core/02-spring-mvc.md) → [自动配置](./reference/01-core/03-auto-configuration.md) → [事务管理](./reference/01-core/04-transaction.md)
-2. **数据库**：[MySQL](./reference/02-database/01-mysql.md) → [Redis](./reference/02-database/03-redis.md) → [MongoDB](./reference/02-database/04-mongodb.md) → 更多
-3. **框架核心**：[Security + JWT](./reference/03-framework/05-security-jwt.md) → [AOP](./reference/03-framework/03-aop.md) → [Actuator](./reference/03-framework/01-actuator.md) → 更多
-4. **微服务**：[Gateway](./reference/04-microservice/01-gateway.md) → [服务发现](./reference/04-microservice/02-service-discovery.md) → [配置中心](./reference/04-microservice/03-config-center.md) → 更多
-5. **进阶主题**：[WebSocket](./reference/05-advanced/01-websocket.md) → [Batch](./reference/05-advanced/02-batch.md) → [WebFlux](./reference/05-advanced/03-webflux.md) → 更多
-
 ## 项目结构
 
 ```

@@ -9,9 +9,11 @@
 **解决方案**：
 
 1. 检查端口占用：
+
    ```bash
    lsof -i :3306  # macOS/Linux
    ```
+
 2. 如端口被占用，修改 compose 文件中的映射端口或停止本地服务
 3. 确保 Docker Desktop（macOS/Windows）或 dockerd（Linux）正在运行
 
@@ -41,9 +43,11 @@
 **解决方案**：
 
 1. 确认 Docker 中间件正在运行：
+
    ```bash
    docker compose -f devops/full-stack-compose.yml ps
    ```
+
 2. 检查 `application.yml` 中的 host/port/username/password 是否与 Docker Compose 配置一致
 
 ---
@@ -86,6 +90,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)  # macOS
 
 - **日志位置**：Spring Boot 默认输出到控制台
 - **日志级别调整**：
+
   ```yaml
   logging:
     level:

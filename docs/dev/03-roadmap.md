@@ -2,109 +2,154 @@
 
 ## 概述
 
-Spring 生态学习项目的开发分为以下阶段，每个阶段有明确的交付物和验收标准。
-
-## Phase 1 — 核心基础篇
-
-**目标**：建立项目骨架，完成 Spring 核心基础文档和示例项目
-
-**交付物**：
-- 项目根 README + 文档中心导航
-- 核心基础篇文档（IoC & DI, Spring MVC, 自动配置与 Starter, 事务管理）
-- 对应示例项目（spring-ioc-demo, spring-mvc-demo, spring-autoconfig-demo, spring-transaction-demo）
-- Docker Compose 中间件编排
-- 快速开始指南
-
-**验收标准**：
-- 所有示例项目独立编译通过
-- 文档中代码示例与示例项目代码一致
-- 快速开始指南可引导新人完成首次运行
-
-**状态**：✅ 已完成
+Spring 生态学习项目按照学习路线分为多个阶段（Part），每个阶段有对应的实例项目。
+项目按学习顺序编号，放置在 `examples/` 目录下。
 
 ---
 
-## Phase 2 — 数据库篇与框架核心篇
+## Part 1 — 准备阶段
 
-**目标**：覆盖常用数据库集成和框架核心能力
+**目标**：掌握 Spring 依赖的 Java 语言特性
 
-**交付物**：
-- 数据库篇文档（MySQL, PostgreSQL, Redis, MongoDB, Elasticsearch, ClickHouse, InfluxDB）
-- 框架核心篇文档（Security+JWT, AOP, Actuator, 日志, 测试, OpenAPI, MyBatis, JPA深入, 缓存, 调度, 异步, 校验, 文件上传）
-- 对应示例项目（逐个创建）
+**实例项目**：`01-spring-java-basics-demo`
+
+**覆盖内容**：
+
+- Java 注解机制（自定义注解、元注解、注解处理）
+- Java 反射基础（Class 对象、动态实例化、方法调用）
+- Lambda 与函数式接口（Function/Consumer/Supplier、方法引用）
 
 **验收标准**：
-- 每个数据库示例项目连接对应中间件完成 CRUD 操作
-- Security 示例项目实现 JWT 认证授权全流程
 
-**状态**：⏳ 文档已完成，示例项目部分待生成
+- 项目独立编译通过
+- 包含注解定义与读取、反射操作、Lambda 使用的示例代码
+
+**状态**：⏳ 待开始
 
 ---
 
-## Phase 3 — 微服务篇
+## Part 2 — 核心概念
 
-**目标**：建立微服务架构学习体系
+**目标**：理解 Spring 框架核心机制
 
-**交付物**：
-- 微服务篇文档（Gateway, 服务发现, 配置中心, 服务间通信, 熔断降级, 分布式事务, 消息队列, 可观测性）
-- 微服务综合示例项目（多模块）
+**实例项目**：`02-spring-core-demo`
+
+**覆盖内容**：
+
+- IoC（控制反转）原理
+- Bean 定义、作用域、生命周期
+- DI（依赖注入）三种方式，构造器注入为主
+- AOP（面向切面编程）
+- ApplicationContext 容器
 
 **验收标准**：
-- 微服务示例项目包含 gateway + user-service + order-service
-- 服务间可正常通信，熔断规则生效
-- 配置中心可动态刷新配置
 
-**状态**：⏳ 文档已完成，示例项目待生成
+- 项目独立编译通过
+- 演示构造器注入、Bean 生命周期回调、AOP 切面拦截
+
+**状态**：⏳ 待开始
 
 ---
 
-## Phase 4 — 进阶主题篇
+## Part 3 — Spring Boot 起步
 
-**目标**：覆盖进阶和高级主题
+**目标**：让项目跑起来，并具备可观测性
 
-**交付物**：
-- 进阶主题篇文档（WebSocket/SSE, Spring Batch, Spring WebFlux, Spring Modulith, Docker 部署）
-- 对应示例项目
+**实例项目**：
+
+- `03-spring-boot-demo` — 基础启动实例
+- `04-spring-boot-observability-demo` — 在 03 基础上添加可观测性
+
+**覆盖内容**：
+
+03-spring-boot-demo：
+
+- Spring Boot 自动配置原理
+- Starter 机制
+- 项目结构与约定
+- 配置文件（application.yml、Profile）
+
+04-spring-boot-observability-demo（复制 03 后扩展）：
+
+- Spring Boot Actuator（健康检查、指标端点）
+- OpenTelemetry 集成（Traces、Metrics）
+- Micrometer 指标
+- 结构化日志（SLF4J + Logback JSON）
 
 **验收标准**：
-- WebSocket 示例实现实时聊天
-- Batch 示例完成 ETL 流程
-- WebFlux 示例演示响应式编程
 
-**状态**：⏳ 文档已完成，示例项目部分待生成
+- 03 项目 `mvn spring-boot:run` 正常启动
+- 04 项目启动后 `/actuator/health` 可访问
+- 04 项目日志输出为 JSON 格式，包含 Trace ID
+
+**状态**：⏳ 待开始
 
 ---
 
-## Phase 5 — 版本升级与优化
+## Part 4 — Web 开发
 
-**目标**：统一升级至目标版本，完善内容
+**目标**：掌握 Spring MVC RESTful API 开发全流程
 
-**交付物**：
-- 所有示例项目升级至 Spring Boot 4.0.5 + Java 21
-- 补充 Spring Cloud Alibaba 集成示例（Sentinel, Seata, RocketMQ）
-- 补充 TestContainers 集成测试
-- Kubernetes 部署方案文档
+**实例项目**：`05-spring-web-demo`
+
+**覆盖内容**：
+
+- Controller 与路由（@RestController、@RequestMapping）
+- 请求参数处理（@PathVariable、@RequestParam、@RequestBody）
+- 响应处理与 DTO 设计
+- 全局异常处理（@ControllerAdvice）
+- 参数校验（Bean Validation）
+- API 文档（springdoc-openapi / Swagger UI）
 
 **验收标准**：
-- 所有示例项目在目标版本下编译通过
-- 测试覆盖率 ≥ 60%
 
-**状态**：📅 计划中
+- 项目独立编译通过
+- 提供完整的 CRUD API 示例
+- Swagger UI 可访问并展示所有接口
+- 参数校验失败返回统一错误格式
+
+**状态**：⏳ 待开始
 
 ---
 
 ## 里程碑总览
 
-| 阶段 | 目标 | 关键交付物 | 状态 |
-|------|------|------------|------|
-| Phase 1 | 核心基础 | 文档 + 4 个示例项目 | ✅ 已完成 |
-| Phase 2 | 数据库与框架 | 仅文档 | ⏳ 待开始 |
-| Phase 3 | 微服务 | 仅文档 | ⏳ 待开始 |
-| Phase 4 | 进阶主题 | 仅文档 | ⏳ 待开始 |
-| Phase 5 | 升级优化 | 全项目升级 + 补充 | 📅 计划中 |
+| 阶段 | 目标 | 实例项目 | 状态 |
+|------|------|----------|------|
+| Part 1 | 准备阶段 | `01-spring-java-basics-demo` | ⏳ 待开始 |
+| Part 2 | 核心概念 | `02-spring-core-demo` | ⏳ 待开始 |
+| Part 3 | Spring Boot 起步 | `03-spring-boot-demo` + `04-spring-boot-observability-demo` | ⏳ 待开始 |
+| Part 4 | Web 开发 | `05-spring-web-demo` | ⏳ 待开始 |
+
+---
+
+## 后续阶段（规划中）
+
+以下阶段对应 `reference/01_Java Spring.md` 中的 Part 5-11，待前 4 个阶段完成后再规划实例项目：
+
+- Part 5 — 数据访问（MySQL/JPA/MyBatis/Redis/MongoDB）
+- Part 6 — 业务能力（Service 层/配置管理/定时任务/缓存/文件处理）
+- Part 7 — 测试（单元测试/集成测试/测试切片）
+- Part 8 — 安全（Spring Security/JWT）
+- Part 9 — 通信协议（WebSocket/MQTT/Modbus）
+- Part 10 — 微服务（Spring Cloud 全家桶）
+- Part 11 — 部署与进阶（Docker/K8s/WebFlux/Batch）
+
+---
+
+## 项目命名规范
+
+- 目录名格式：`{两位数序号}-spring-{topic}-demo`
+- GroupId：`com.example`
+- ArtifactId：与目录名一致
+- 版本：`0.0.1-SNAPSHOT`
+- Parent：`spring-boot-starter-parent:4.0.5`
+- Java：21
+
+---
 
 ## 测试要求
 
 - 每个示例项目需包含基础单元测试
 - 数据库/中间件相关示例包含集成测试
-- Phase 5 完成后全项目测试覆盖率 ≥ 60%
+- 后续阶段完成后全项目测试覆盖率 ≥ 60%

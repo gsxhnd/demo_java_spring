@@ -6,8 +6,7 @@
 
 | 目录 | 说明 | 适合谁 |
 |------|------|--------|
-| [dev/](./dev/README.md) | 开发文档：架构设计、技术栈、路线图 | 贡献者、维护者 |
-| [usage/](./usage/README.md) | 使用指南：环境搭建、学习路径、故障排查 | 所有学习者 |
+| [dev/](./dev/README.md) | 开发文档：架构、技术栈、快速开始、配置、学习指南、故障排查 | 贡献者、维护者、所有学习者 |
 | [reference/](./reference/README.md) | 技术参考：各主题的深度技术文档 | 按需查阅 |
 
 ## 快速开始
@@ -25,7 +24,7 @@ cd examples/spring-mvc-demo
 mvn spring-boot:run
 ```
 
-详细步骤见 [使用指南 - 快速开始](./usage/01-quick-start.md)。
+详细步骤见 [快速开始](./dev/03-quick-start.md)。
 
 ## 版本矩阵
 
@@ -44,8 +43,7 @@ mvn spring-boot:run
 ```
 demo_java_spring/
 ├── docs/                  ← 文档中心（你在这里）
-│   ├── dev/               ← 开发文档
-│   ├── usage/             ← 使用指南
+│   ├── dev/               ← 开发文档（架构、快速开始、学习指南等）
 │   └── reference/         ← 技术参考
 │       ├── core/          ← 核心基础篇
 │       ├── database/      ← 数据库篇

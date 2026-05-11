@@ -65,4 +65,4 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"
 
 ## 下一步
 
-配置完成后，请阅读 [学习指南](./03-learning-guide.md) 开始学习。
+配置完成后，请阅读 [学习指南](./05-learning-guide.md) 开始学习。

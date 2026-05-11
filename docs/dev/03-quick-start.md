@@ -106,6 +106,6 @@ docker compose -f devops/full-stack-compose.yml down
 
 ## 下一步
 
-- 了解配置选项 → [配置说明](./02-configuration.md)
-- 开始学习 → [学习指南](./03-learning-guide.md)
+- 了解配置选项 → [配置说明](./04-configuration.md)
+- 开始学习 → [学习指南](./05-learning-guide.md)
 - 查阅技术参考 → [技术参考文档](../reference/README.md)

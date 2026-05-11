@@ -158,6 +158,6 @@ mvn spring-boot:run -Dspring-boot.run.arguments="--server.port=8081"
 
 ## 下一步
 
-- 遇到问题 → [故障排查](./04-troubleshooting.md)
-- 有疑问 → [常见问题](./05-faq.md)
+- 遇到问题 → [故障排查](./06-troubleshooting.md)
+- 有疑问 → [常见问题](./07-faq.md)
 - 查阅技术细节 → [技术参考文档](../reference/README.md)

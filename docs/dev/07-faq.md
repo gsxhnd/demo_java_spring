@@ -94,7 +94,7 @@ docker compose -f devops/full-stack-compose.yml up -d
 
 ### Q: 我可以贡献自己的示例项目吗？
 
-欢迎贡献！请参考 [项目架构](../dev/01-architecture.md) 中的示例项目约定，然后提交 PR。建议先开 Issue 讨论你的想法。
+欢迎贡献！请参考 [项目架构](./01-architecture.md) 中的示例项目约定，然后提交 PR。建议先开 Issue 讨论你的想法。
 
 ---
 

@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: spring-data-jpa-demo
+
+  jpa:
+    open-in-view: false
+
+app:
+  datasource:
+    write:
+      url: jdbc:mysql://localhost:3306/demo_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      username: root
+      password: root123
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+        connection-timeout: 30000
+        pool-name: WriteHikariPool
+    read:
+      url: jdbc:mysql://localhost:3306/demo_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      username: root
+      password: root123
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 10
+        minimum-idle: 5
+        connection-timeout: 30000
+        pool-name: ReadHikariPool
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

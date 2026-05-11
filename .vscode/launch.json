@@ -61,6 +61,27 @@
       "mainClass": "com.example.boot.SpringBootDemoApplication",
       "projectName": "03-spring-boot-demo",
       "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=44229 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=03-spring-boot-demo"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ObservabilityDemoApplication<04-spring-boot-observability-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.observability.ObservabilityDemoApplication",
+      "projectName": "04-spring-boot-observability-demo",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SpringWebDemoApplication<05-spring-web-demo>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.web.SpringWebDemoApplication",
+      "projectName": "05-spring-web-demo",
+      "args": "",
       "envFile": "${workspaceFolder}/.env"
     }
   ]

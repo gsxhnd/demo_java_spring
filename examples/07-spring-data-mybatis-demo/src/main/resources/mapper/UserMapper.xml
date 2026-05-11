@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mybatis.mapper.read.UserReadMapper">
+
+    <resultMap id="UserResultMap" type="com.example.mybatis.entity.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="email" property="email"/>
+        <result column="age" property="age"/>
+        <result column="status" property="status"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="street" property="street"/>
+        <result column="zip_code" property="zipCode"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="userColumns">
+        id, username, email, age, status, province, city, street, zip_code, created_at, updated_at
+    </sql>
+
+    <sql id="dynamicConditions">
+        <where>
+            <if test="username != null and username != ''">
+                AND username LIKE CONCAT('%', #{username}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                AND email LIKE CONCAT('%', #{email}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="minAge != null">
+                AND age &gt;= #{minAge}
+            </if>
+            <if test="maxAge != null">
+                AND age &lt;= #{maxAge}
+            </if>
+            <if test="city != null and city != ''">
+                AND city = #{city}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findWithDynamicConditions" resultMap="UserResultMap">
+        SELECT
+        <include refid="userColumns"/>
+        FROM users
+        <include refid="dynamicConditions"/>
+        <if test="orderBy != null and orderBy != ''">
+            ORDER BY ${orderBy}
+        </if>
+        <otherwise>
+            ORDER BY id DESC
+        </otherwise>
+    </select>
+
+    <select id="countWithDynamicConditions" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        <include refid="dynamicConditions"/>
+    </select>
+
+    <select id="findByIds" resultMap="UserResultMap">
+        SELECT
+        <include refid="userColumns"/>
+        FROM users
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        ORDER BY id DESC
+    </select>
+
+</mapper>

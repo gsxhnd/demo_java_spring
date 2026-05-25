@@ -38,18 +38,21 @@ mvn spring-boot:run
 
 ## 学习路线
 
+详情见 [学习指南](./dev/05-learning-guide.md)，按顺序从 Part 1 → Part 11 学习：
+
+```
+Part 1 准备阶段 → Part 2 核心概念 → Part 3 Spring Boot 起步 → Part 4 Web 开发
+     → Part 5 数据访问(JPA) → Part 6 数据访问(MyBatis) → Part 7 多数据库
+     → Part 8 业务能力 → Part 9 测试 → Part 10 安全 → Part 11 通信协议
+```
+
 ## 项目结构
 
 ```
 demo_java_spring/
 ├── docs/                  ← 文档中心（你在这里）
 │   ├── dev/               ← 开发文档（架构、快速开始、学习指南等）
-│   └── reference/         ← 技术参考
-│       ├── core/          ← 核心基础篇
-│       ├── database/      ← 数据库篇
-│       ├── framework/     ← 框架核心篇
-│       ├── microservice/  ← 微服务篇
-│       └── advanced/      ← 进阶主题篇
+│   └── reference/         ← 技术参考（00-44 按编号排列）
 ├── examples/              ← 独立可运行的示例项目
 └── devops/                ← Docker Compose 中间件编排
 ```

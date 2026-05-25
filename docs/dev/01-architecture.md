@@ -29,18 +29,13 @@ Monorepo + 独立示例项目架构。根项目为文档中心，`examples/` 下
 ```
 ┌─────────────────────────────────────────────┐
 │          docs/ — 文档层                       │
-│   dev/ | reference/                           │
-│   reference: core/ | database/ | framework/  │
-│              microservice/ | advanced/        │
+│   dev/ | reference/（00-44 按编号排列）        │
 └──────────────────────┬──────────────────────┘
                        │ 引用对应
                        ▼
 ┌─────────────────────────────────────────────┐
 │         examples/ — 示例代码层               │
-│   核心基础篇: 4 个独立项目                    │
-│   spring-ioc-demo/ | spring-mvc-demo/       │
-│   spring-autoconfig-demo/ |                 │
-│   spring-transaction-demo/                  │
+│   01～12 共 12 个独立 Spring Boot 项目         │
 └──────────────────────┬──────────────────────┘
                        │ 依赖
                        ▼
@@ -55,7 +50,7 @@ Monorepo + 独立示例项目架构。根项目为文档中心，`examples/` 下
 | 模块 | 职责 | 入口文件 |
 |------|------|----------|
 | `docs/dev/` | 开发文档：架构、技术栈、路线图、快速开始、配置、学习指南、故障排查、FAQ | 本文件 |
-| `docs/reference/` | 技术参考：各主题深度文档 | `reference/00-readme.md` |
+| `docs/reference/` | 技术参考：各主题深度文档，共 45 篇 | `reference/README.md` |
 | `examples/` | 独立可运行的示例项目 | `examples/README.md` |
 | `devops/` | 中间件容器编排 | `devops/full-stack-compose.yml` |
 

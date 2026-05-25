@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/demo_db?useSSL=true&serverTimezone=UTC
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root123}
+  jpa:
+    show-sql: false
+
+app:
+  environment-label: production
+  cache:
+    ttl-seconds: 600
+
+logging:
+  level:
+    root: WARN
+    com.example: INFO

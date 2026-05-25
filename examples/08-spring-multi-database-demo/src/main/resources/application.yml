@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: spring-multi-database-demo
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redis123
+    mongodb:
+      uri: mongodb://root:mongo123@localhost:27017/demo_db?authSource=admin
+  elasticsearch:
+    uris: http://localhost:9200
+
+app:
+  influx:
+    url: http://localhost:8086
+    token: my-super-secret-token
+    org: my-org
+    bucket: monitoring
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    try-it-out-enabled: true
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

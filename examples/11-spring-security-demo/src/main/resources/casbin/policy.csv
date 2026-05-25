@@ -1,0 +1,8 @@
+p, admin, /api/admin/**, *
+p, admin, /api/casbin/**, *
+p, admin, /api/documents/**, *
+p, user, /api/documents, GET
+p, user, /api/documents, POST
+p, user, /api/documents/*, GET
+g, admin, admin
+g, user, user

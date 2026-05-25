@@ -5,7 +5,7 @@
 This is a **collection of independent Spring Boot example projects**, not a single application. There is no root `pom.xml` and no multi-module Maven build.
 
 ```
-examples/          # 4 standalone Spring Boot core projects, each with its own pom.xml
+examples/          # standalone Spring Boot example projects, each with its own pom.xml
 devops/            # Docker Compose files for middleware (MySQL, Redis, MongoDB, etc.)
 docs/              # Chinese-primary documentation (dev guides, wiki, usage, reference)
 .agents/skills/    # AI agent skill definitions

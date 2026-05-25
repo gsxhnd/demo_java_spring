@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: spring-communication-demo
+
+server:
+  port: 8080
+
+app:
+  mqtt:
+    enabled: true
+    broker-url: tcp://localhost:1883
+    client-id: spring-communication-demo
+    default-topic-prefix: demo/communication
+    subscribe-topics:
+      - demo/communication/sensor/#
+      - demo/communication/command/#
+  modbus:
+    host: 127.0.0.1
+    port: 1502
+    slave-id: 1
+    holding-register-offset: 0
+    register-count: 4
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.example: DEBUG
